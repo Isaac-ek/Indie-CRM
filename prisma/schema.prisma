@@ -1,0 +1,413 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum WorkspaceInviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
+enum MailProvider {
+  GMAIL
+}
+
+enum LeadStage {
+  NEW
+  QUALIFIED
+  PROPOSAL
+  FOLLOW_UP
+  WON
+  LOST
+}
+
+enum LeadSource {
+  MANUAL
+  FORM
+  EMAIL
+  REFERRAL
+  IMPORT
+}
+
+enum LeadPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+  INTERNAL
+}
+
+enum WebhookEventStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+enum AIGenerationType {
+  TAGGING
+  SUMMARY
+  REPLY_SUGGESTION
+  FOLLOW_UP
+  SEARCH_ANSWER
+}
+
+enum AuditLogAction {
+  LEAD_CREATED
+  LEAD_WORKFLOW_UPDATED
+  LEAD_INTELLIGENCE_UPDATED
+  NOTE_CREATED
+  OUTBOUND_MESSAGE_SAVED
+  MEMBER_INVITED
+  MEMBER_ROLE_UPDATED
+  INVITE_REVOKED
+  INVITE_ACCEPTED
+  AI_INSTRUCTIONS_UPDATED
+  GMAIL_CONNECTED
+  GMAIL_SYNCED
+  WEBHOOK_QUEUE_PROCESSED
+}
+
+model Tenant {
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  name             String
+  aiInstructions   String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  memberships      Membership[]
+  contacts         Contact[]
+  leads            Lead[]
+  conversations    Conversation[]
+  messages         Message[]
+  notes            Note[]
+  tags             Tag[]
+  webhookEvents    WebhookEvent[]
+  aiGenerations    AIGeneration[]
+  messageEmbeddings MessageEmbedding[]
+  noteEmbeddings   NoteEmbedding[]
+  auditLogs        AuditLog[]
+  operationalEvents OperationalEvent[]
+  workspaceInvites WorkspaceInvite[]
+  mailboxConnections MailboxConnection[]
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String?
+  imageUrl      String?
+  passwordHash  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  memberships   Membership[]
+  createdLeads  Lead[]        @relation("LeadCreatedBy")
+  notes         Note[]
+  sentMessages  Message[]     @relation("MessageAuthor")
+  aiGenerations AIGeneration[] @relation("AIGenerationRequestedBy")
+  sentWorkspaceInvites WorkspaceInvite[] @relation("WorkspaceInviteSentBy")
+  auditLogs      AuditLog[]
+}
+
+model Membership {
+  id        String         @id @default(cuid())
+  tenantId  String
+  userId    String
+  role      MembershipRole @default(MEMBER)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+}
+
+model WorkspaceInvite {
+  id           String                @id @default(cuid())
+  tenantId     String
+  email        String
+  role         MembershipRole        @default(MEMBER)
+  token        String                @unique
+  status       WorkspaceInviteStatus @default(PENDING)
+  invitedById  String?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  acceptedAt   DateTime?
+  tenant       Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  invitedBy    User?                 @relation("WorkspaceInviteSentBy", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, email, status])
+  @@index([tenantId, status, createdAt])
+}
+
+model Contact {
+  id            String         @id @default(cuid())
+  tenantId      String
+  email         String
+  name          String
+  company       String?
+  phone         String?
+  industry      String?
+  website       String?
+  companyNotes  String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leads         Lead[]
+  conversations Conversation[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId, company])
+}
+
+model Lead {
+  id             String        @id @default(cuid())
+  tenantId       String
+  contactId      String
+  createdById    String?
+  title          String
+  source         LeadSource
+  priority       LeadPriority  @default(MEDIUM)
+  stage          LeadStage     @default(NEW)
+  summary        String?
+  nextAction     String?
+  score          Int?
+  budgetStatus   String?
+  lastContactAt  DateTime?
+  followUpAt     DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact        Contact       @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  createdBy      User?         @relation("LeadCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  conversations  Conversation[]
+  notes          Note[]
+  leadTags       LeadTag[]
+  aiGenerations  AIGeneration[]
+
+  @@index([tenantId, stage])
+  @@index([tenantId, followUpAt])
+  @@index([contactId])
+}
+
+model Conversation {
+  id              String            @id @default(cuid())
+  tenantId        String
+  contactId       String
+  leadId          String?
+  subject         String?
+  channel         String
+  lastMessageAt   DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact         Contact           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  lead            Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages        Message[]
+  aiGenerations   AIGeneration[]
+
+  @@index([tenantId, lastMessageAt])
+  @@index([leadId])
+}
+
+model Message {
+  id              String            @id @default(cuid())
+  tenantId        String
+  conversationId  String
+  authorId        String?
+  externalMessageId String?         @unique
+  source          String?
+  direction       MessageDirection
+  subject         String?
+  content         String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation    Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  author          User?             @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  embeddings      MessageEmbedding[]
+
+  @@index([tenantId, createdAt])
+  @@index([conversationId])
+}
+
+model MailboxConnection {
+  id             String       @id @default(cuid())
+  tenantId       String
+  provider       MailProvider
+  email          String
+  refreshToken   String
+  lastSyncAttemptAt DateTime?
+  lastSyncedAt   DateTime?
+  consecutiveFailures Int     @default(0)
+  lastError      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, provider, email])
+  @@index([tenantId, provider, updatedAt])
+}
+
+model Note {
+  id          String    @id @default(cuid())
+  tenantId    String
+  leadId      String
+  authorId    String?
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead        Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  author      User?     @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  embeddings  NoteEmbedding[]
+
+  @@index([tenantId, createdAt])
+  @@index([leadId])
+}
+
+model Tag {
+  id           String         @id @default(cuid())
+  tenantId     String
+  name         String
+  color        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leadTags     LeadTag[]
+
+  @@unique([tenantId, name])
+}
+
+model LeadTag {
+  leadId       String
+  tagId        String
+  assignedBy   String?
+  createdAt    DateTime @default(now())
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  tag          Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([leadId, tagId])
+  @@index([tagId])
+}
+
+model WebhookEvent {
+  id             String             @id @default(cuid())
+  tenantId       String
+  source         String
+  eventType      String
+  payload        Json
+  status         WebhookEventStatus @default(PENDING)
+  retryCount     Int                @default(0)
+  maxRetries     Int                @default(5)
+  receivedAt     DateTime           @default(now())
+  lastAttemptAt  DateTime?
+  nextRetryAt    DateTime?
+  processedAt    DateTime?
+  errorMessage   String?
+  tenant         Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status, receivedAt])
+  @@index([tenantId, status, nextRetryAt, receivedAt])
+}
+
+model AIGeneration {
+  id              String            @id @default(cuid())
+  tenantId        String
+  leadId          String?
+  conversationId  String?
+  requestedById   String?
+  type            AIGenerationType
+  model           String
+  promptVersion   String?
+  inputSummary    String?
+  outputText      String
+  metadata        Json?
+  createdAt       DateTime          @default(now())
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lead            Lead?             @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  conversation    Conversation?     @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  requestedBy     User?             @relation("AIGenerationRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, type, createdAt])
+  @@index([leadId])
+  @@index([conversationId])
+}
+
+model MessageEmbedding {
+  id            String    @id @default(cuid())
+  tenantId      String
+  messageId     String    @unique
+  model         String
+  contentHash   String
+  vector        Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  message       Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, updatedAt])
+}
+
+model NoteEmbedding {
+  id            String    @id @default(cuid())
+  tenantId      String
+  noteId        String    @unique
+  model         String
+  contentHash   String
+  vector        Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  note          Note      @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, updatedAt])
+}
+
+model AuditLog {
+  id          String          @id @default(cuid())
+  tenantId    String
+  actorUserId String?
+  action      AuditLogAction
+  targetType  String
+  targetId    String?
+  summary     String
+  metadata    Json?
+  createdAt   DateTime        @default(now())
+  tenant      Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actorUser   User?           @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, action, createdAt])
+}
+
+model OperationalEvent {
+  id        String   @id @default(cuid())
+  tenantId  String
+  source    String
+  level     String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, source, createdAt])
+}

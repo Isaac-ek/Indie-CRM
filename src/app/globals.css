@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --background: #07111f;
+  --foreground: #e5eefb;
+  --surface: rgba(7, 17, 31, 0.72);
+  --surface-strong: rgba(9, 22, 40, 0.88);
+  --card: rgba(243, 248, 255, 0.9);
+  --card-border: rgba(148, 163, 184, 0.2);
+  --accent: #14b8a6;
+  --accent-strong: #0f766e;
+  --highlight: #f59e0b;
+  --ink: #081120;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  background-image:
+    radial-gradient(circle at top left, rgba(45, 212, 191, 0.22), transparent 28%),
+    radial-gradient(circle at 85% 15%, rgba(251, 191, 36, 0.18), transparent 22%),
+    radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.14), transparent 28%),
+    linear-gradient(180deg, #08111f 0%, #0b1728 48%, #0d1a2d 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(45, 212, 191, 0.28);
+  color: #f8fafc;
+}
