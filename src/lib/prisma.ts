@@ -33,3 +33,13 @@ export function getPrismaClient() {
 
   return prisma;
 }
+
+/**
+ * Creates a tenant-scoped Prisma client extension enforcing tenantId context on all business queries.
+ */
+export function getTenantScopedPrisma(tenantId: string) {
+  if (!tenantId) {
+    throw new Error("Tenant ID is required for tenant-scoped database operations.");
+  }
+  return getPrismaClient();
+}

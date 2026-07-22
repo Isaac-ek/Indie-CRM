@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { MembershipRole, Prisma } from "@/generated/prisma/client";
 import { getCurrentUserContext } from "@/lib/auth";
 import { getPrismaClient } from "@/lib/prisma";
+import { hasPermission, PermissionKey, requirePermission } from "@/lib/rbac";
 
 export type WorkspaceContext = {
   id: string | null;
@@ -23,19 +24,19 @@ export type WorkspaceContext = {
 };
 
 export function canManageWorkspace(role: MembershipRole) {
-  return role === MembershipRole.OWNER || role === MembershipRole.ADMIN;
+  return hasPermission(role, "workspace:settings");
 }
 
 export function canManageLeadRecords(role: MembershipRole) {
-  return canManageWorkspace(role);
+  return hasPermission(role, "leads:write");
 }
 
 export function canContributeToLead(role: MembershipRole) {
-  return (
-    role === MembershipRole.OWNER ||
-    role === MembershipRole.ADMIN ||
-    role === MembershipRole.MEMBER
-  );
+  return hasPermission(role, "notes:write");
+}
+
+export function requireWorkspacePermission(workspace: WorkspaceContext, permission: PermissionKey) {
+  requirePermission(workspace.membershipRole, permission);
 }
 
 const demoWorkspace = {
