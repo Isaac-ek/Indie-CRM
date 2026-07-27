@@ -121,6 +121,21 @@ Important architectural choices in the schema:
 - Searchable memory is stored explicitly through `MessageEmbedding` and `NoteEmbedding`
 - Workflow credibility is supported through `AuditLog` and `OperationalEvent`
 
+## 🐳 Docker Deployment & Containerization
+
+Indie CRM includes full Docker and Docker Compose orchestration for running both the Next.js application and PostgreSQL (`pgvector`) in isolated containers.
+
+### Quick Start with Docker Compose
+
+```bash
+# Build and launch application & database containers
+docker compose up --build -d
+```
+
+Open **[http://localhost:3000](http://localhost:3000)** (Default login: `owner@northstarstudio.test` / `demo12345`).
+
+For a detailed educational guide on Docker multi-stage builds, container architecture, volume persistence, and CLI commands, see **[DOCKER_SETUP_GUIDE.md](file:///Users/user/Downloads/indie%20crm/DOCKER_SETUP_GUIDE.md)**.
+
 ## Local Setup
 
 ### 1. Install dependencies

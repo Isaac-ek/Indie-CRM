@@ -1,0 +1,44 @@
+name: indie-crm
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: indie_crm_db
+    restart: always
+    environment:
+      POSTGRES_USER: indie
+      POSTGRES_PASSWORD: indie_password
+      POSTGRES_DB: indie_crm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U indie -d indie_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: indie_crm_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://indie:indie_password@db:5432/indie_crm?schema=public
+      AUTH_SECRET: indie-crm-production-docker-secret-32b!
+      ENCRYPTION_KEY: indie-crm-docker-encryption-key-32!
+      DEMO_USER_PASSWORD: demo12345
+      AUTO_SEED: "true"
+      OPENAI_API_KEY: ""
+      OPENAI_MODEL: gpt-5-mini
+      OPENAI_EMBEDDING_MODEL: text-embedding-3-small
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
