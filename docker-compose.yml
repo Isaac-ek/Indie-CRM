@@ -30,6 +30,7 @@ services:
     environment:
       DATABASE_URL: postgresql://indie:indie_password@db:5432/indie_crm?schema=public
       AUTH_SECRET: indie-crm-production-docker-secret-32b!
+      AUTH_TRUST_HOST: "true"
       ENCRYPTION_KEY: indie-crm-docker-encryption-key-32!
       DEMO_USER_PASSWORD: demo12345
       AUTO_SEED: "true"
