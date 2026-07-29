@@ -25,24 +25,31 @@ flowchart TD
     subgraph Docker Network [indie-crm Network]
         App["Indie CRM App Container\n(Node.js 20 Standalone Server)\nPort: 3000"]
         DB["PostgreSQL Container\n(pgvector/pgvector:pg16)\nPort: 5432"]
+        Redis["Redis Container\n(redis:7-alpine)\nPort: 6379"]
     end
 
     Host["Developer Host Machine / Browser"] -->|http://localhost:3000| App
     App -->|postgresql://indie:***@db:5432/indie_crm| DB
-    DB <--> Volume["Named Volume: postgres_data"]
+    App -->|redis://redis:6379| Redis
+    DB <--> DBVolume["Named Volume: postgres_data"]
+    Redis <--> RedisVolume["Named Volume: redis_data"]
 ```
 
 ### Services Breakdown
 
 1. **`app` Service (Next.js Application)**
    - Built via multi-stage `Dockerfile` (`node:20-alpine`).
-   - Runs `docker-entrypoint.sh` on startup to automatically apply database schema (`npx prisma db push`) and seed demo records (`npx prisma db seed`).
+   - Runs `docker-entrypoint.sh` on startup to automatically apply database schema (`npx prisma db push`) and seed demo records (`npx tsx prisma/seed.ts`).
    - Serves Next.js standalone server on port `3000`.
+   - Exposes container liveness & database readiness status at `GET /api/health`.
 
-2. **`db` Service (PostgreSQL Database)**
-   - Image: `pgvector/pgvector:pg16` (includes native vector memory extension for AI search).
-   - Configured with automated healthcheck (`pg_isready`).
-   - Persists data to Docker volume `postgres_data`.
+2. **`db` Service (PostgreSQL + pgvector)**
+   - Uses official `pgvector/pgvector:pg16` image.
+   - Configured with healthcheck (`pg_isready`).
+
+3. **`redis` Service (Redis Cache & Queue Store)**
+   - Uses lightweight `redis:7-alpine` image.
+   - Configured with healthcheck (`redis-cli ping`).
 
 ---
 

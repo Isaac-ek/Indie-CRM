@@ -346,13 +346,14 @@ Captured from the seeded demo workspace on the current build:
 
 ## Testing And Validation
 
-Current validation path:
+Current automated and operational validation suite:
 
-- `npm run lint`
-- seeded workspace login
-- manual lead creation and reply flow
-- webhook submission against `/api/webhooks/forms/:workspaceSlug`
-- queue processing through internal and cron routes
-- embedding backfill through Settings
-
-The remaining polish item after this README is to add more explicit automated tests for filtering, lead actions, and core server-side integration flows.
+- **GitHub Actions CI/CD (`.github/workflows/ci.yml`)**: Automated pipeline running on every PR and main commit (`npm run lint`, `npx tsc --noEmit`, `npm run test`, `npm run build`).
+- **Unit Test Suite (`npm run test`)**: 31 automated unit tests verifying AES-256-GCM encryption, RBAC capabilities, vector cosine similarity math, event queue dispatching, lead scoring, workflow automation rules, and HMAC-SHA256 webhook signatures.
+- **Container Liveness Probe (`GET /api/health`)**: Public JSON healthcheck endpoint reporting container state, uptime latency, and PostgreSQL connectivity.
+- **Manual Verification & Seeding**:
+  - `npm run lint`
+  - Seeded workspace login (`owner@northstarstudio.test` / `demo12345`)
+  - Webhook submission against `/api/webhooks/forms/:workspaceSlug` with HMAC-SHA256 signature verification
+  - Queue processing through internal and cron routes
+  - Embedding backfill through Settings

@@ -19,6 +19,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: indie_crm_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   app:
     build:
       context: .
@@ -29,6 +43,7 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://indie:indie_password@db:5432/indie_crm?schema=public
+      REDIS_URL: redis://redis:6379
       AUTH_SECRET: indie-crm-production-docker-secret-32b!
       AUTH_TRUST_HOST: "true"
       ENCRYPTION_KEY: indie-crm-docker-encryption-key-32!
@@ -40,6 +55,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  redis_data:
