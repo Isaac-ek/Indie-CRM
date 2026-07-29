@@ -14,6 +14,8 @@ import {
 } from "@/lib/settings-actions";
 import { canManageWorkspace, getWorkspaceContext } from "@/lib/workspaces";
 
+import { WorkflowBuilder } from "@/components/workflow-builder";
+
 const settingsGroups = [
   {
     title: "Workspace",
@@ -275,6 +277,10 @@ export default async function SettingsPage({ params, searchParams }: PageProps) 
           Workspace AI instructions saved.
         </div>
       ) : null}
+
+      <section className="mb-8 rounded-[1.85rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(243,248,255,0.92))] p-6 shadow-[0_24px_80px_rgba(148,163,184,0.16)]">
+        <WorkflowBuilder workspaceSlug={workspace.slug} />
+      </section>
 
       {query.settingsError ? (
         <div className="mb-6 rounded-[1.5rem] border border-rose-200 bg-[linear-gradient(135deg,rgba(255,228,230,0.92),rgba(255,255,255,0.92))] px-4 py-4 text-sm text-rose-950 shadow-[0_12px_40px_rgba(251,113,133,0.14)]">

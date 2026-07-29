@@ -16,6 +16,8 @@ import {
 } from "@/lib/lead-actions";
 import { canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
 
+import { KanbanBoard } from "@/components/kanban-board";
+
 const stageOptions = inboxStageOptions;
 const sortOptions = inboxSortOptions;
 const viewOptions = inboxViewOptions;
@@ -37,6 +39,7 @@ type PageProps = {
     tag?: string;
     sort?: string;
     view?: string;
+    layout?: string;
   }>;
 };
 
@@ -53,6 +56,7 @@ export default async function LeadsPage({ params, searchParams }: PageProps) {
     sortOptions.find((option) => option === query.sort) ?? "follow-up";
   const selectedView =
     viewOptions.find((option) => option === query.view) ?? "all";
+  const layoutMode = query.layout === "kanban" ? "kanban" : "list";
   const availableTags = Array.from(new Set(leads.flatMap((lead) => lead.tags))).sort();
   const selectedTag = availableTags.includes(query.tag ?? "") ? query.tag ?? "" : "";
   const filteredLeads = filterAndSortInboxLeads({
@@ -154,8 +158,32 @@ export default async function LeadsPage({ params, searchParams }: PageProps) {
                 Filter by stage, tag, or keywords across the lead title, inquiry, AI summary, and next action.
               </p>
             </div>
-            <div className="rounded-full border border-slate-200 bg-white/75 px-3 py-1 text-xs font-medium text-slate-700">
-              {filteredLeads.length} of {leads.length} leads shown
+            <div className="flex items-center gap-2">
+              <div className="flex rounded-full border border-slate-200 bg-white/80 p-1 shadow-sm">
+                <Link
+                  href={`/w/${workspace.slug}/leads?layout=list`}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                    layoutMode === "list"
+                      ? "bg-slate-900 text-white shadow"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  📋 List
+                </Link>
+                <Link
+                  href={`/w/${workspace.slug}/leads?layout=kanban`}
+                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                    layoutMode === "kanban"
+                      ? "bg-teal-800 text-white shadow"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  🎛️ Kanban Board
+                </Link>
+              </div>
+              <div className="rounded-full border border-slate-200 bg-white/75 px-3 py-1 text-xs font-medium text-slate-700">
+                {filteredLeads.length} of {leads.length} leads
+              </div>
             </div>
           </div>
 
@@ -269,6 +297,22 @@ export default async function LeadsPage({ params, searchParams }: PageProps) {
           </form>
         </section>
 
+        {layoutMode === "kanban" ? (
+          <KanbanBoard
+            workspaceSlug={workspace.slug}
+            leads={filteredLeads.map((l) => ({
+              id: l.id,
+              title: l.title,
+              stage: l.stage,
+              priority: l.priority,
+              score: 75,
+              contactName: l.name,
+              company: l.company,
+              tags: l.tags,
+            }))}
+          />
+        ) : (
+          <>
         {canEditLeadRecords ? (
           <form
             id="bulk-leads-form"
@@ -558,6 +602,8 @@ export default async function LeadsPage({ params, searchParams }: PageProps) {
             </div>
           ) : null}
         </div>
+        </>
+        )}
       </div>
     </AppShell>
   );
