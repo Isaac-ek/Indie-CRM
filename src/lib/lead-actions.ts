@@ -23,7 +23,7 @@ import {
   parseOptionalFollowUpDate,
   parseSelectedLeadIds,
 } from "@/lib/lead-action-utils";
-import { canContributeToLead, canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
+import { canContributeToLead, canDeleteLeads, canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
 import { AuditLogAction } from "@/generated/prisma/client";
 
 function parseLeadStage(value: string) {
@@ -683,7 +683,7 @@ export async function deleteLeadAction(formData: FormData) {
     redirect(`/w/${workspaceSlug}/leads/${leadId}?dangerError=${encodeURIComponent("Delete requires database mode.")}`);
   }
 
-  if (!canManageLeadRecords(workspace.membershipRole)) {
+  if (!canDeleteLeads(workspace.membershipRole)) {
     redirectLeadPermissionsError(workspaceSlug, leadId, "delete");
   }
 

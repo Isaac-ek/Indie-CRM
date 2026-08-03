@@ -23,76 +23,75 @@ export function CreateLeadForm({ workspaceSlug, mode }: CreateLeadFormProps) {
   ] as const;
 
   return (
-    <section className="rounded-[1.9rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(238,247,255,0.92))] p-6 shadow-[0_24px_80px_rgba(148,163,184,0.16)]">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between border-b border-slate-100 pb-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.24em] text-teal-700">
-            New Lead
+          <p className="text-xs font-bold uppercase tracking-wider text-teal-800">
+            Intake Form
           </p>
-          <h3 className="mt-2 text-xl font-semibold text-slate-950">
-            Capture a real inquiry
+          <h3 className="mt-1 text-xl font-bold text-slate-900">
+            Create & Capture New Lead
           </h3>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-            This is the first auth-ready write path. Once workspace identity is backed by
-            login, this action already knows which tenant to write into.
+          <p className="mt-1 max-w-2xl text-sm font-medium text-slate-600">
+            Add a new lead directly into this workspace with automatic tenant scoping and AI tagging.
           </p>
         </div>
-        <div className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-medium text-teal-800">
-          {mode === "database" ? "Writes to database" : "Demo mode redirect only"}
-        </div>
+        <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold text-teal-900">
+          {mode === "database" ? "Database Persistence" : "Demo Mode"}
+        </span>
       </div>
 
       <form action={createLeadAction} className="mt-6 grid gap-4 lg:grid-cols-2">
         <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Lead name</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Lead Name</span>
           <input
             name="name"
             type="text"
             required
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="Maya Cole"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+            placeholder="e.g. Maya Cole"
           />
         </label>
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Email</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Email Address</span>
           <input
             name="email"
             type="email"
             required
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="maya@company.com"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+            placeholder="e.g. maya@studiolantern.com"
           />
         </label>
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Company</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Company</span>
           <input
             name="company"
             type="text"
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="Studio Lantern"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+            placeholder="e.g. Studio Lantern"
           />
         </label>
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Opportunity or category</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Opportunity Title</span>
           <input
             name="title"
             type="text"
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="Personal, website redesign, discovery call, support retainer..."
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+            placeholder="e.g. Brand refresh and marketing site"
           />
         </label>
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Source</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Source</span>
           <select
             name="source"
             defaultValue="MANUAL"
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
           >
             {sourceOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -102,12 +101,12 @@ export function CreateLeadForm({ workspaceSlug, mode }: CreateLeadFormProps) {
           </select>
         </label>
 
-        <label className="grid gap-2 text-sm text-slate-700">
-          <span className="font-medium">Priority</span>
+        <label className="grid gap-1.5 text-sm text-slate-900">
+          <span className="font-bold">Priority</span>
           <select
             name="priority"
             defaultValue="MEDIUM"
-            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
           >
             {priorityOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -117,28 +116,22 @@ export function CreateLeadForm({ workspaceSlug, mode }: CreateLeadFormProps) {
           </select>
         </label>
 
-        <div className="rounded-[1.5rem] border border-amber-200/80 bg-[linear-gradient(135deg,rgba(254,243,199,0.85),rgba(255,255,255,0.85))] px-4 py-4 text-sm leading-6 text-amber-950">
-          {mode === "database"
-            ? "When submitted, this will create a contact, lead, conversation, and initial inbound message inside the selected workspace with workflow metadata from day one."
-            : "Connect DATABASE_URL later and this same form will start persisting leads without changing the UI."}
-        </div>
-
-        <label className="grid gap-2 text-sm text-slate-700 lg:col-span-2">
-          <span className="font-medium">Inquiry</span>
+        <label className="grid gap-1.5 text-sm text-slate-900 lg:col-span-2">
+          <span className="font-bold">Initial Inquiry / Context</span>
           <textarea
             name="inquiry"
+            rows={4}
             required
-            rows={5}
-            className="rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 outline-none ring-0 transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="Looking for a brand refresh and marketing site before June..."
+            className="rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600"
+            placeholder="Describe the initial inquiry details, requirements, budget, or timeline..."
           />
         </label>
 
-        <div className="lg:col-span-2">
+        <div className="flex items-center justify-end lg:col-span-2 mt-2">
           <FormSubmitButton
-            idleLabel="Create lead"
-            pendingLabel="Creating lead..."
-            className="rounded-full bg-[linear-gradient(135deg,#0f766e,#0f172a)] px-5 py-3 text-sm font-semibold !text-white shadow-[0_12px_30px_rgba(15,118,110,0.28)] transition hover:scale-[1.01] hover:shadow-[0_18px_40px_rgba(15,118,110,0.34)] disabled:cursor-not-allowed disabled:opacity-70"
+            idleLabel="Create Lead"
+            pendingLabel="Saving Lead..."
+            className="rounded-xl bg-teal-600 px-6 py-2.5 text-sm font-bold text-white shadow hover:bg-teal-500 transition"
           />
         </div>
       </form>

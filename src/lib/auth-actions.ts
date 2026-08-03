@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 import { MembershipRole } from "@/generated/prisma/client";
 import { signIn, signOut } from "@/auth";
 import { getPrismaClient } from "@/lib/prisma";
-import { requiredEmail, requiredTrimmedString } from "@/lib/validation";
+import { requiredEmail, requiredTrimmedString, validatePasswordStrength } from "@/lib/validation";
 import { slugifyWorkspaceName } from "@/lib/workspace-slug";
+import { rethrowIfRedirect } from "@/lib/errors";
 
 export async function loginAction(formData: FormData) {
   const email = requiredEmail(formData, "email");
@@ -20,6 +21,8 @@ export async function loginAction(formData: FormData) {
       redirectTo: "/",
     });
   } catch (error) {
+    rethrowIfRedirect(error);
+
     if (error instanceof AuthError) {
       redirect("/login?error=invalid_credentials");
     }
@@ -44,7 +47,8 @@ export async function registerAction(formData: FormData) {
   const password = requiredTrimmedString(formData, "password", { maxLength: 200 });
   const workspaceName = requiredTrimmedString(formData, "workspaceName", { maxLength: 120 });
 
-  if (password.length < 8) {
+  const passwordCheck = validatePasswordStrength(password);
+  if (!passwordCheck.valid) {
     redirect("/register?error=password_length");
   }
 
@@ -104,6 +108,8 @@ export async function registerAction(formData: FormData) {
       redirectTo: "/",
     });
   } catch (error) {
+    rethrowIfRedirect(error);
+
     if (error instanceof AuthError) {
       redirect("/login?registered=1");
     }

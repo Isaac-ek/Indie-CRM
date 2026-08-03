@@ -35,6 +35,14 @@ export function canContributeToLead(role: MembershipRole) {
   return hasPermission(role, "notes:write");
 }
 
+export function canDeleteLeads(role: MembershipRole) {
+  return hasPermission(role, "leads:delete");
+}
+
+export function canManageOwners(role: MembershipRole) {
+  return hasPermission(role, "owners:manage");
+}
+
 export function requireWorkspacePermission(workspace: WorkspaceContext, permission: PermissionKey) {
   requirePermission(workspace.membershipRole, permission);
 }

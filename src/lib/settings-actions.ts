@@ -119,6 +119,10 @@ export async function inviteWorkspaceMemberAction(formData: FormData) {
   const currentUser = await getCurrentUserContext();
   const prisma = getPrismaClient();
 
+  if (role === MembershipRole.OWNER && workspace.membershipRole !== MembershipRole.OWNER) {
+    redirect(`/w/${workspaceSlug}/settings?memberError=permissions`);
+  }
+
   const existingMembership = await prisma.membership.findFirst({
     where: {
       tenantId: workspace.id!,
@@ -241,6 +245,13 @@ export async function updateWorkspaceMemberRoleAction(formData: FormData) {
 
   if (!membership) {
     redirect(`/w/${workspaceSlug}/settings?memberError=missing`);
+  }
+
+  if (
+    (membership.role === MembershipRole.OWNER || role === MembershipRole.OWNER) &&
+    workspace.membershipRole !== MembershipRole.OWNER
+  ) {
+    redirect(`/w/${workspaceSlug}/settings?memberError=permissions`);
   }
 
   const ownerCount = await prisma.membership.count({

@@ -1,4 +1,5 @@
 import { MembershipRole } from "@/generated/prisma/client";
+import { ForbiddenError } from "@/lib/errors";
 
 export type PermissionKey =
   | "leads:read"
@@ -8,7 +9,8 @@ export type PermissionKey =
   | "ai:trigger"
   | "integrations:manage"
   | "members:manage"
-  | "workspace:settings";
+  | "workspace:settings"
+  | "owners:manage";
 
 /**
  * Permission matrix maps roles to explicit granular capabilities.
@@ -23,6 +25,7 @@ export const ROLE_PERMISSIONS: Record<MembershipRole, PermissionKey[]> = {
     "integrations:manage",
     "members:manage",
     "workspace:settings",
+    "owners:manage",
   ],
   ADMIN: [
     "leads:read",
@@ -55,6 +58,31 @@ export function hasPermission(role: MembershipRole, permission: PermissionKey): 
  */
 export function requirePermission(role: MembershipRole, permission: PermissionKey): void {
   if (!hasPermission(role, permission)) {
-    throw new Error(`Forbidden: Role '${role}' lacks permission '${permission}'`);
+    throw new ForbiddenError(`Forbidden: Role '${role}' lacks permission '${permission}'`);
+  }
+}
+
+/**
+ * Checks whether an actor role can manage a target role.
+ * - OWNER can manage OWNER, ADMIN, MEMBER.
+ * - ADMIN can manage ADMIN, MEMBER (cannot manage OWNER).
+ * - MEMBER cannot manage any roles.
+ */
+export function canManageTargetRole(actorRole: MembershipRole, targetRole: MembershipRole): boolean {
+  if (actorRole === MembershipRole.OWNER) {
+    return true;
+  }
+  if (actorRole === MembershipRole.ADMIN) {
+    return targetRole !== MembershipRole.OWNER;
+  }
+  return false;
+}
+
+/**
+ * Asserts that an actor role can manage a target role, throwing ForbiddenError if not allowed.
+ */
+export function requireManageTargetRole(actorRole: MembershipRole, targetRole: MembershipRole): void {
+  if (!canManageTargetRole(actorRole, targetRole)) {
+    throw new ForbiddenError(`Forbidden: Role '${actorRole}' cannot modify or remove an '${targetRole}'.`);
   }
 }
