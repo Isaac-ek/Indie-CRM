@@ -65,9 +65,9 @@ test("retries failed jobs up to maxAttempts before declaring failure", async () 
   assert.equal(res1.status, "pending");
   assert.equal(attemptsCount, 1);
 
-  // Second attempt (fails -> max attempts reached -> status = failed)
+  // Second attempt (fails -> max attempts reached -> status = dead_letter)
   const res2 = await processNextJob();
-  assert.equal(res2.status, "failed");
+  assert.equal(res2.status, "dead_letter");
   assert.equal(attemptsCount, 2);
   assert.equal(res2.error, "Network timeout");
 });

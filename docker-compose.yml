@@ -19,6 +19,25 @@ services:
       timeout: 5s
       retries: 5
 
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    container_name: indie_crm_pgbouncer
+    restart: always
+    environment:
+      DB_USER: indie
+      DB_PASSWORD: indie_password
+      DB_HOST: db
+      DB_NAME: indie_crm
+      LISTEN_PORT: 6432
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: 200
+      DEFAULT_POOL_SIZE: 20
+    ports:
+      - "6432:6432"
+    depends_on:
+      db:
+        condition: service_healthy
+
   redis:
     image: redis:7-alpine
     container_name: indie_crm_redis
@@ -42,7 +61,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://indie:indie_password@db:5432/indie_crm?schema=public
+      DATABASE_URL: postgresql://indie:indie_password@pgbouncer:6432/indie_crm?schema=public&pgbouncer=true&connection_limit=10
+      DIRECT_URL: postgresql://indie:indie_password@db:5432/indie_crm?schema=public
       REDIS_URL: redis://redis:6379
       AUTH_SECRET: indie-crm-production-docker-secret-32b!
       AUTH_TRUST_HOST: "true"
@@ -55,6 +75,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      pgbouncer:
+        condition: service_started
       redis:
         condition: service_healthy
 
