@@ -29,16 +29,46 @@ export function rankByVectorSimilarity<T extends { vector?: number[] | unknown }
   queryVector: number[],
   topK = 5
 ): Array<T & { similarity: number }> {
-  return candidates
-    .map((candidate) => {
-      const candidateVector = Array.isArray(candidate.vector)
-        ? (candidate.vector as number[])
-        : [];
-      const similarity = cosineSimilarity(queryVector, candidateVector);
-      return { ...candidate, similarity };
-    })
-    .sort((a, b) => b.similarity - a.similarity)
-    .slice(0, topK);
+  if (!queryVector || queryVector.length === 0) {
+    return [];
+  }
+
+  // Pre-calculate query magnitude once to avoid recalculating for every candidate
+  let normQuerySq = 0;
+  for (let i = 0; i < queryVector.length; i++) {
+    normQuerySq += queryVector[i] * queryVector[i];
+  }
+  const queryMag = Math.sqrt(normQuerySq);
+  if (queryMag === 0) {
+    return [];
+  }
+
+  const results: Array<T & { similarity: number }> = [];
+
+  for (let idx = 0; idx < candidates.length; idx++) {
+    const candidate = candidates[idx];
+    const candidateVector = Array.isArray(candidate.vector)
+      ? (candidate.vector as number[])
+      : null;
+
+    if (!candidateVector || candidateVector.length !== queryVector.length) {
+      continue;
+    }
+
+    let dotProduct = 0;
+    let normCandSq = 0;
+    for (let i = 0; i < candidateVector.length; i++) {
+      const val = candidateVector[i];
+      dotProduct += queryVector[i] * val;
+      normCandSq += val * val;
+    }
+
+    const candMag = Math.sqrt(normCandSq);
+    const similarity = candMag === 0 ? 0 : dotProduct / (queryMag * candMag);
+    results.push({ ...candidate, similarity });
+  }
+
+  return results.sort((a, b) => b.similarity - a.similarity).slice(0, topK);
 }
 
 /**

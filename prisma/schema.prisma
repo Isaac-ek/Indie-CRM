@@ -204,6 +204,8 @@ model Lead {
 
   @@index([tenantId, stage])
   @@index([tenantId, followUpAt])
+  @@index([tenantId, archivedAt, updatedAt])
+  @@index([tenantId, archivedAt, followUpAt])
   @@index([contactId])
 }
 
@@ -246,6 +248,7 @@ model Message {
 
   @@index([tenantId, createdAt])
   @@index([conversationId])
+  @@index([conversationId, createdAt])
 }
 
 model MailboxConnection {
@@ -281,6 +284,7 @@ model Note {
 
   @@index([tenantId, createdAt])
   @@index([leadId])
+  @@index([leadId, createdAt])
 }
 
 model Tag {
@@ -326,6 +330,7 @@ model WebhookEvent {
 
   @@index([tenantId, status, receivedAt])
   @@index([tenantId, status, nextRetryAt, receivedAt])
+  @@index([status, nextRetryAt, receivedAt])
 }
 
 model AIGeneration {
@@ -347,6 +352,7 @@ model AIGeneration {
   requestedBy     User?             @relation("AIGenerationRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
 
   @@index([tenantId, type, createdAt])
+  @@index([tenantId, createdAt])
   @@index([leadId])
   @@index([conversationId])
 }

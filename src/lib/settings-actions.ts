@@ -550,3 +550,69 @@ export async function syncGmailAction(formData: FormData) {
     redirect(`/w/${workspaceSlug}/settings?gmailError=${encodeURIComponent(message)}`);
   }
 }
+
+export async function testSlackWebhookAction(formData: FormData) {
+  const workspaceSlug = requiredTrimmedString(formData, "workspaceSlug", { maxLength: 80 });
+  let slackWebhookUrl = "";
+
+  try {
+    slackWebhookUrl = requiredTrimmedString(formData, "slackWebhookUrl", { maxLength: 2048 });
+  } catch (error) {
+    redirectSettingsError(workspaceSlug, error);
+  }
+
+  const workspace = await requireManageMembersWorkspace(workspaceSlug);
+  const { notifyHotLeadSlack } = await import("@/lib/slack");
+
+  try {
+    const result = await notifyHotLeadSlack(workspace.id!, slackWebhookUrl, {
+      leadId: "test-lead-id",
+      workspaceSlug,
+      title: "High Intent Branding Inquiry (Test)",
+      contactName: "Alex Rivera",
+      contactEmail: "alex@northstar.test",
+      company: "Northstar Studio",
+      stage: "QUALIFIED",
+      priority: "HIGH",
+      score: 92,
+      summary: "Client requires immediate high-priority brand design refresh with confirmed $15k budget.",
+    });
+
+    revalidateWorkspaceMembershipPaths(workspaceSlug);
+
+    if (result.success) {
+      redirect(`/w/${workspaceSlug}/settings?slackTested=success`);
+    } else {
+      redirect(`/w/${workspaceSlug}/settings?slackError=${encodeURIComponent(result.error || "Webhook failed")}`);
+    }
+  } catch (error) {
+    rethrowIfRedirect(error);
+    redirectSettingsError(workspaceSlug, error);
+  }
+}
+
+export async function syncOutlookAction(formData: FormData) {
+  const workspaceSlug = requiredTrimmedString(formData, "workspaceSlug", { maxLength: 80 });
+  const workspace = await requireManageMembersWorkspace(workspaceSlug);
+  const { syncWorkspaceOutlookInbox } = await import("@/lib/outlook-sync");
+
+  try {
+    const result = await syncWorkspaceOutlookInbox({
+      tenantId: workspace.id!,
+      requestedById: workspace.currentUser.id,
+      limit: 10,
+    });
+
+    revalidatePath(`/w/${workspaceSlug}/leads`);
+    revalidatePath(`/w/${workspaceSlug}/search`);
+    revalidateWorkspaceMembershipPaths(workspaceSlug);
+
+    redirect(
+      `/w/${workspaceSlug}/settings?gmailImported=${result.imported}&gmailSkipped=${result.skipped}`,
+    );
+  } catch (error) {
+    rethrowIfRedirect(error);
+    const message = error instanceof Error ? error.message : "outlook_sync_failed";
+    redirect(`/w/${workspaceSlug}/settings?gmailError=${encodeURIComponent(message)}`);
+  }
+}

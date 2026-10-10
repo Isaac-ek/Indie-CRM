@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ReactNode, useState, useEffect } from "react";
 import { FormSubmitButton } from "@/components/form-submit-button";
+import { VoiceNoteRecorder } from "@/components/voice-note-recorder";
 
 type LeadDetailLayoutProps = {
   workspaceSlug: string;
@@ -395,6 +396,12 @@ export function LeadDetailLayout({
           {/* TAB 3: Team Notes */}
           {activeTab === "notes" && (
             <div className="space-y-6">
+              <VoiceNoteRecorder
+                workspaceSlug={workspaceSlug}
+                leadId={lead.id}
+                canEdit={canEditLeadRecords}
+              />
+
               <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="text-xl font-bold text-slate-900">Team Notes & Internal Memory</h2>
                 <div className="mt-4">{components.leadNoteForm}</div>

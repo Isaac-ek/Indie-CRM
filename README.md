@@ -33,6 +33,7 @@ Indie CRM is designed for freelancers, consultants, creators, and small agencies
 - AI lead tagging, summaries, reply drafts, follow-up recommendations, and grounded memory answers
 - Embedding storage for messages and notes, semantic search, and similar-lead retrieval
 - Form webhook ingestion endpoint with queue processing and Vercel cron support
+- Vision AI Image Processing Pipeline for scanning business cards, meeting whiteboards, conference badges, and documents with instant OCR, predictive scoring, and pgvector embeddings
 - Gmail mailbox connection and manual sync path
 - Audit log and operational-event tracking for workflow, AI, webhook, and sync activity
 
@@ -89,6 +90,43 @@ flowchart LR
     Mailbox --> Lead
     Lead --> AI["AI Tagging / Summary / Embeddings"]
 ```
+
+### Vision AI & Image Processing Workflow (Week 10 Deliverable)
+
+Indie CRM includes an end-to-end Vision AI intake pipeline that transforms unstructured physical interactions—business cards, whiteboard brainstorms, conference badges, and documents—into structured CRM intelligence in seconds.
+
+```mermaid
+flowchart TD
+    Img["Image Upload / 1-Click Preset"] --> Check["SHA-256 Checksum & Guardrails (<10MB)"]
+    Check --> RL["Rate Limiting (20 req/min)"]
+    RL --> Vision["OpenAI Vision API (gpt-4o-mini) / Offline Fallback"]
+    Vision --> Extract["Structured JSON Extraction (Contact + Lead)"]
+    Extract --> Score["Predictive Lead Scoring Engine (0-100)"]
+    Extract --> TenantDB["Tenant-Scoped DB Write (Contact, Lead, Note)"]
+    TenantDB --> Embed["pgvector Semantic Embeddings (1536-dim)"]
+    TenantDB --> Prov["AIGeneration Audit & Provenance Store"]
+    Score --> Workflow["Workflow Engine: Triggers & Slack Block Kit Alerts"]
+```
+
+#### How to Run the Live Demo
+1. Navigate to the **AI Scanner** tab in the sidebar (`/w/:workspaceSlug/scanner`).
+2. Choose one of the built-in 1-click presets:
+   - 🪪 **Luminary Creative Studio VP Business Card**
+   - 📋 **HyperGrowth Labs Strategy Whiteboard** ($18,500 scope)
+   - 🏷️ **Health-Tech Summit 2026 Attendee Badge** (Urgent priority)
+   - Or upload any custom JPEG, PNG, or WebP photo ($\le$ 10MB).
+3. Click **Execute End-to-End Pipeline** to observe real-time stage progression:
+   `Validation ➔ Vision OCR ➔ Lead Scoring ➔ pgvector Embeddings ➔ Workflow Triggers`.
+4. Deep-link directly into the generated Lead record with full provenance, extracted notes, and semantic search ready.
+
+#### Programmatic API Endpoint
+```bash
+# Ingest an image or preset via REST API:
+curl -X POST "http://localhost:3000/api/workspaces/demo-workspace/image-workflow" \
+  -F "presetKey=card"
+```
+
+For complete documentation, see the [Vision AI & Image Processing Guide](IMAGE_PROCESSING_GUIDE.md) and [LinkedIn Post #4](LINKEDIN_POST_4.md).
 
 ## Data Model Highlights
 
@@ -348,12 +386,26 @@ Captured from the seeded demo workspace on the current build:
 
 Current automated and operational validation suite:
 
-- **GitHub Actions CI/CD (`.github/workflows/ci.yml`)**: Automated pipeline running on every PR and main commit (`npm run lint`, `npx tsc --noEmit`, `npm run test`, `npm run build`).
-- **Unit Test Suite (`npm run test`)**: 31 automated unit tests verifying AES-256-GCM encryption, RBAC capabilities, vector cosine similarity math, event queue dispatching, lead scoring, workflow automation rules, and HMAC-SHA256 webhook signatures.
+- **GitHub Actions CI/CD (`.github/workflows/ci.yml`)**: Automated pipeline running on every PR and main commit (`npm run lint`, `npx tsc --noEmit`, `npm run test`, `npm run build`, Docker container build, and AWS ECS deployment).
+- **Terraform CI/CD Pipeline (`.github/workflows/terraform.yml`)**: Automated workflow checking formatting (`terraform fmt -check`), validating syntax (`terraform validate`), planning against AWS, and applying updates on merge.
+- **Unit Test Suite (`npm run test`)**: 74 automated unit & integration tests running in `< 1.5s` verifying Vision AI extraction, SHA-256 integrity, AES-256-GCM encryption, RBAC capabilities, vector cosine similarity math, event queue dispatching, lead scoring, workflow automation rules, and HMAC-SHA256 webhook signatures.
 - **Container Liveness Probe (`GET /api/health`)**: Public JSON healthcheck endpoint reporting container state, uptime latency, and PostgreSQL connectivity.
+- **Dedicated Technical Guides**:
+  - [AWS Terraform Infrastructure & Deployment Guide](TERRAFORM_DEPLOYMENT_GUIDE.md)
+  - [Cloud Readiness Review & Well-Architected Assessment](CLOUD_READINESS_REVIEW.md)
+  - [Technical Mock Interview #3 Prep & Architecture Q&A](MOCK_INTERVIEW_3.md)
+  - [Architecture Presentation Deck](ARCHITECTURE_PRESENTATION.md)
+  - [CRM v2 Technical Manual & Specification](CRM_V2_DOCUMENTATION.md)
+  - [Vision AI & Image Processing Guide](IMAGE_PROCESSING_GUIDE.md)
+  - [REST API & OpenAPI Specification](API_DOCUMENTATION.md)
+  - [Docker & Container Setup Guide](DOCKER_SETUP_GUIDE.md)
+  - [LinkedIn Post #3: API Docs, Voice Notes & Slack Alerts](LINKEDIN_POST_3.md)
+  - [LinkedIn Post #4: Vision AI Pipeline, OCR & pgvector Memory](LINKEDIN_POST_4.md)
+  - [LinkedIn Post #5: CRM v2 Launch, Analytics & AWS Cloud](LINKEDIN_POST_5.md)
 - **Manual Verification & Seeding**:
   - `npm run lint`
   - Seeded workspace login (`owner@northstarstudio.test` / `demo12345`)
   - Webhook submission against `/api/webhooks/forms/:workspaceSlug` with HMAC-SHA256 signature verification
+  - Vision AI Image Scanner at `/w/:workspaceSlug/scanner`
   - Queue processing through internal and cron routes
   - Embedding backfill through Settings

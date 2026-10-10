@@ -1,0 +1,216 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Indie CRM API",
+    "description": "Multi-tenant AI-assisted CRM REST API for lead ingestion, health diagnostics, and background queue processing.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "summary": "Health Check & Database Readiness",
+        "operationId": "getHealthStatus",
+        "tags": ["Diagnostics"],
+        "responses": {
+          "200": {
+            "description": "System operational",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthStatus" }
+              }
+            }
+          },
+          "503": {
+            "description": "Database offline or degraded",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthStatus" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/webhooks/forms/{workspaceSlug}": {
+      "post": {
+        "summary": "Ingest Inbound Lead Form Webhook",
+        "operationId": "ingestFormWebhook",
+        "tags": ["Webhooks"],
+        "parameters": [
+          {
+            "name": "workspaceSlug",
+            "in": "path",
+            "required": true,
+            "description": "Target workspace slug",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "x-indie-crm-secret",
+            "in": "header",
+            "required": false,
+            "description": "Webhook ingestion secret token",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FormWebhookPayload" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Webhook accepted and queued for storage-first processing",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WebhookResponse" }
+              }
+            }
+          },
+          "400": { "description": "Invalid payload format" },
+          "401": { "description": "Unauthorized webhook secret" },
+          "404": { "description": "Workspace slug not found" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/api/cron/process-webhooks": {
+      "get": {
+        "summary": "Vercel Cron Webhook Queue Worker",
+        "operationId": "processCronWebhooks",
+        "tags": ["Queue Processing"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "example": "Bearer your-cron-secret" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Queue processing metrics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueueProcessingMetrics" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized cron token" }
+        }
+      }
+    },
+    "/api/internal/process-webhooks": {
+      "post": {
+        "summary": "Internal Batch Queue Retry Endpoint",
+        "operationId": "processInternalWebhooks",
+        "tags": ["Queue Processing"],
+        "parameters": [
+          {
+            "name": "workspaceSlug",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "x-internal-secret",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Internal queue execution metrics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QueueProcessingMetrics" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized internal secret" },
+          "404": { "description": "Workspace slug not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthStatus": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "degraded"] },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "latencyMs": { "type": "number" },
+          "environment": { "type": "string" },
+          "services": {
+            "type": "object",
+            "properties": {
+              "database": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["healthy", "unhealthy"] },
+                  "error": { "type": "string", "nullable": true }
+                }
+              }
+            }
+          }
+        }
+      },
+      "FormWebhookPayload": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "company": { "type": "string" },
+          "title": { "type": "string" },
+          "message": { "type": "string" },
+          "budget": { "type": "string" },
+          "timeline": { "type": "string" },
+          "source": { "type": "string" }
+        }
+      },
+      "WebhookResponse": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" },
+          "workspaceSlug": { "type": "string" },
+          "eventId": { "type": "string" },
+          "status": { "type": "string", "enum": ["PENDING", "PROCESSED", "FAILED"] }
+        }
+      },
+      "QueueProcessingMetrics": {
+        "type": "object",
+        "properties": {
+          "ok": { "type": "boolean" },
+          "schedule": { "type": "string" },
+          "processed": { "type": "integer" },
+          "succeeded": { "type": "integer" },
+          "failed": { "type": "integer" }
+        }
+      }
+    }
+  }
+}

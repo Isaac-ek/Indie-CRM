@@ -44,6 +44,16 @@ export default async function RegisterPage({ searchParams }: PageProps) {
           ) : null}
 
           <form action={registerAction} className="mt-6 grid gap-4">
+            {/* Honeypot field for bot protection */}
+            <input
+              type="text"
+              name="_hp_auth_verification"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ display: "none", position: "absolute", left: "-9999px" }}
+            />
+
             <label className="grid gap-2 text-sm text-slate-700">
               <span className="font-medium">Your name</span>
               <input

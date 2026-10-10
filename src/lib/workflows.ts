@@ -8,7 +8,8 @@ export type WorkflowTriggerType =
 export type WorkflowActionType =
   | "AUTO_SET_PRIORITY"
   | "AUTO_SCHEDULE_FOLLOWUP"
-  | "TAG_LEAD";
+  | "TAG_LEAD"
+  | "SEND_SLACK_ALERT";
 
 export type WorkflowRule = {
   id: string;

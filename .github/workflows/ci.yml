@@ -6,9 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test-and-build:
-    name: Lint, Test & Build
+  quality-and-tests:
+    name: Lint, TypeCheck & Automated Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -24,26 +28,48 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Verify TypeScript Compilation
+        run: npx tsc --noEmit
+
       - name: Run ESLint
         run: npm run lint
 
-      - name: Run Type Check
-        run: npx tsc --noEmit
-
-      - name: Run Unit Tests
+      - name: Run Complete Test Suite (74 Tests)
         run: npm run test
 
-      - name: Run Next.js Production Build
+      - name: Next.js Production Build
         run: npm run build
         env:
           DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
           AUTH_SECRET: "ci-testing-secret-key-32-bytes-minimum!"
 
-  deploy-aws:
-    name: Build Docker & Deploy to AWS
-    needs: test-and-build
+  docker-build:
+    name: Docker Container Build & Security Check
+    needs: quality-and-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Application Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: indie-crm:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-aws-ecs:
+    name: Continuous Deployment to AWS ECS
+    needs: [quality-and-tests, docker-build]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout Repository
@@ -64,7 +90,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker Container
+      - name: Build, Tag, and Push Image to Amazon ECR
+        if: env.AWS_ACCESS_KEY_ID != ''
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: indie-crm
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t indie-crm:latest .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
+      - name: Update ECS Service
+        if: env.AWS_ACCESS_KEY_ID != ''
+        run: |
+          aws ecs update-service \
+            --cluster indie-crm-production-cluster \
+            --service indie-crm-production-service \
+            --force-new-deployment \
+            --region ${{ secrets.AWS_REGION || 'us-east-1' }}

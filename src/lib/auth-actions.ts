@@ -10,6 +10,7 @@ import { getPrismaClient } from "@/lib/prisma";
 import { requiredEmail, requiredTrimmedString, validatePasswordStrength } from "@/lib/validation";
 import { slugifyWorkspaceName } from "@/lib/workspace-slug";
 import { rethrowIfRedirect } from "@/lib/errors";
+import { validateHoneypot } from "@/lib/bot-protection";
 import { logInfo, logWarn, logError } from "@/lib/logger";
 
 async function getRequestContext() {
@@ -23,9 +24,16 @@ async function getRequestContext() {
 }
 
 export async function loginAction(formData: FormData) {
+  const { requestId } = await getRequestContext();
+
+  // Bot Protection: Honeypot check
+  if (!validateHoneypot(formData)) {
+    logWarn("Automated bot submission detected on login (honeypot triggered)", { requestId });
+    redirect("/login?error=invalid_credentials");
+  }
+
   const email = requiredEmail(formData, "email");
   const password = requiredTrimmedString(formData, "password", { maxLength: 200 });
-  const { requestId } = await getRequestContext();
 
   logInfo(`Authentication attempt for email: ${email}`, { requestId, email });
 
@@ -58,6 +66,12 @@ export async function logoutAction() {
 
 export async function registerAction(formData: FormData) {
   const { requestId } = await getRequestContext();
+
+  // Bot Protection: Honeypot check
+  if (!validateHoneypot(formData)) {
+    logWarn("Automated bot submission detected on register (honeypot triggered)", { requestId });
+    redirect("/register?error=bot_detected");
+  }
 
   if (!process.env.DATABASE_URL) {
     logWarn("Registration attempted without DATABASE_URL configured", { requestId });

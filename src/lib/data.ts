@@ -554,11 +554,29 @@ async function fetchTenantDashboardData(tenantSlug: string): Promise<DashboardDa
           archivedAt: null,
         },
         orderBy: [{ followUpAt: "asc" }, { updatedAt: "desc" }],
-        include: {
-          contact: true,
+        select: {
+          id: true,
+          title: true,
+          source: true,
+          priority: true,
+          stage: true,
+          summary: true,
+          nextAction: true,
+          followUpAt: true,
+          updatedAt: true,
+          contact: {
+            select: {
+              name: true,
+              company: true,
+            },
+          },
           leadTags: {
-            include: {
-              tag: true,
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
           conversations: {
@@ -566,12 +584,15 @@ async function fetchTenantDashboardData(tenantSlug: string): Promise<DashboardDa
               lastMessageAt: "desc",
             },
             take: 1,
-            include: {
+            select: {
               messages: {
                 orderBy: {
                   createdAt: "desc",
                 },
                 take: 1,
+                select: {
+                  content: true,
+                },
               },
             },
           },
@@ -582,6 +603,11 @@ async function fetchTenantDashboardData(tenantSlug: string): Promise<DashboardDa
           createdAt: "desc",
         },
         take: 3,
+        select: {
+          id: true,
+          type: true,
+          outputText: true,
+        },
       },
     },
   });
@@ -750,11 +776,25 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
           archivedAt: null,
         },
         orderBy: [{ updatedAt: "desc" }],
-        include: {
-          contact: true,
+        select: {
+          id: true,
+          title: true,
+          stage: true,
+          summary: true,
+          followUpAt: true,
+          contact: {
+            select: {
+              name: true,
+              company: true,
+            },
+          },
           leadTags: {
-            include: {
-              tag: true,
+            select: {
+              tag: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
           notes: {
@@ -762,8 +802,15 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
               createdAt: "desc",
             },
             take: 5,
-            include: {
-              embeddings: true,
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              embeddings: {
+                select: {
+                  vector: true,
+                },
+              },
             },
           },
           conversations: {
@@ -771,14 +818,22 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
               lastMessageAt: "desc",
             },
             take: 3,
-            include: {
+            select: {
+              id: true,
               messages: {
                 orderBy: {
                   createdAt: "desc",
                 },
                 take: 8,
-                include: {
-                  embeddings: true,
+                select: {
+                  id: true,
+                  content: true,
+                  createdAt: true,
+                  embeddings: {
+                    select: {
+                      vector: true,
+                    },
+                  },
                 },
               },
               aiGenerations: {
@@ -786,6 +841,11 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
                   createdAt: "desc",
                 },
                 take: 5,
+                select: {
+                  id: true,
+                  outputText: true,
+                  createdAt: true,
+                },
               },
             },
           },
@@ -794,6 +854,11 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
               createdAt: "desc",
             },
             take: 5,
+            select: {
+              id: true,
+              outputText: true,
+              createdAt: true,
+            },
           },
         },
       },

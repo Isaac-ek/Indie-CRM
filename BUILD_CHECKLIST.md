@@ -52,8 +52,8 @@ Everything we add should strengthen one of these:
   Current progress: webhook requests return `202 Accepted`, queue in-process handling after storage, support manual retry processing from Settings, expose an internal worker endpoint for cron or job-runner triggering, and include a Vercel cron route plus `vercel.json` schedule. External queue infrastructure is still a later upgrade if higher reliability is needed.
 - [x] Add Gmail sync after core ingestion is stable
   Current progress: Settings now stores a workspace Gmail connection with refresh-token auth, supports manual inbox sync, imports recent Gmail messages into contacts/leads/conversations, dedupes by external message ID, and updates embeddings plus AI intelligence for newly created leads.
-- [ ] Later add Outlook support if needed
-- [ ] Add Slack alerts for hot leads as a stretch feature
+- [x] Later add Outlook support if needed
+- [x] Add Slack alerts for hot leads as a stretch feature
 
 ## Phase 6: SaaS/Architecture Credibility
 - [x] Make sure every business query is tenant-scoped
@@ -77,12 +77,12 @@ Everything we add should strengthen one of these:
 - [x] Add tests for filtering, lead actions, and core server actions
 
 ## Stretch Features
-- [ ] Slack notifications for hot leads
-- [ ] Voice note transcription into notes
-- [ ] Lead scoring model
-- [ ] Shared team inbox
-- [ ] Analytics like close rate by tag/category
-- [ ] Per-tenant AI prompt customization
+- [x] Slack notifications for hot leads
+- [x] Voice note transcription into notes
+- [x] Lead scoring model
+- [x] Shared team inbox
+- [x] Analytics like close rate by tag/category
+- [x] Per-tenant AI prompt customization
 
 ## Best Build Order From Here
 - [x] Source + priority editing

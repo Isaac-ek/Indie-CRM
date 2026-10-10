@@ -43,6 +43,16 @@ const DEFAULT_RULES: WorkflowRule[] = [
     actionPayload: { tag: "VIP" },
     enabled: false,
   },
+  {
+    id: "rule_4",
+    tenantId: "demo",
+    name: "Send Slack Alert when Score >= 70",
+    trigger: "ON_HIGH_SCORE",
+    minScore: 70,
+    action: "SEND_SLACK_ALERT",
+    actionPayload: { alert: "hot_lead_slack" },
+    enabled: true,
+  },
 ];
 
 export function WorkflowBuilder({ workspaceSlug }: WorkflowBuilderProps) {
@@ -345,6 +355,7 @@ export function WorkflowBuilder({ workspaceSlug }: WorkflowBuilderProps) {
                   <option value="AUTO_SET_PRIORITY">AUTO_SET_PRIORITY</option>
                   <option value="AUTO_SCHEDULE_FOLLOWUP">AUTO_SCHEDULE_FOLLOWUP</option>
                   <option value="TAG_LEAD">TAG_LEAD</option>
+                  <option value="SEND_SLACK_ALERT">SEND_SLACK_ALERT</option>
                 </select>
               </div>
 

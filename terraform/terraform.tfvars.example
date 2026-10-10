@@ -1,0 +1,29 @@
+# AWS Deployment Environment Configuration
+aws_region          = "us-east-1"
+environment         = "production"
+app_name            = "indie-crm"
+
+# Network
+vpc_cidr            = "10.0.0.0/16"
+availability_zones  = ["us-east-1a", "us-east-1b"]
+
+# PostgreSQL RDS
+db_name             = "indiecrm"
+db_username         = "indieadmin"
+db_password         = "ChangeMe_SecurePassword_2026!"
+db_instance_class   = "db.t4g.micro"
+db_allocated_storage = 20
+
+# Redis Cache & Queue
+redis_node_type     = "cache.t4g.micro"
+
+# ECS Container Application
+app_image           = "123456789012.dkr.ecr.us-east-1.amazonaws.com/indie-crm:latest"
+app_port            = 3000
+app_cpu             = 512
+app_memory          = 1024
+app_desired_count   = 2
+
+# App Secrets
+auth_secret         = "generate-a-strong-32-character-random-secret-key-here"
+openai_api_key      = "sk-proj-..."

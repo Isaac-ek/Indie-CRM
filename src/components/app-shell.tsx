@@ -12,6 +12,8 @@ type NavItem = {
 const navItems: NavItem[] = [
   { href: "", label: "Dashboard", description: "Pipeline, follow-ups, and AI activity" },
   { href: "/leads", label: "Leads", description: "Inbox and relationship history" },
+  { href: "/scanner", label: "AI Scanner", description: "Business cards, whiteboards & OCR pipeline" },
+  { href: "/analytics", label: "Analytics", description: "Pipeline conversion & team performance" },
   { href: "/search", label: "Search", description: "Semantic memory across conversations" },
   { href: "/settings", label: "Settings", description: "Workspace, prompts, and integrations" },
 ];

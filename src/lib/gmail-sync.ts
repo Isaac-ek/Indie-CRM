@@ -322,7 +322,26 @@ export async function syncWorkspaceGmailInbox(params: {
     let failed = 0;
     const failureSamples: string[] = [];
 
+    // Batch query existing message IDs to eliminate N+1 queries inside the loop
+    const messageIds = messages.map((m) => m.id);
+    const existingRecords = messageIds.length
+      ? await prisma.message.findMany({
+          where: { externalMessageId: { in: messageIds } },
+          select: { externalMessageId: true },
+        })
+      : [];
+    const existingSet = new Set(
+      existingRecords
+        .map((r) => r.externalMessageId)
+        .filter((id): id is string => Boolean(id)),
+    );
+
     for (const gmailMessage of messages) {
+      if (existingSet.has(gmailMessage.id)) {
+        skipped += 1;
+        continue;
+      }
+
       try {
         const result = await importGmailMessage({
           tenantId: params.tenantId,

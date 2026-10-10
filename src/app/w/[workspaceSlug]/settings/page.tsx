@@ -11,6 +11,8 @@ import {
   saveGmailConnectionAction,
   syncGmailAction,
   processWebhookQueueAction,
+  testSlackWebhookAction,
+  syncOutlookAction,
 } from "@/lib/settings-actions";
 import { canManageWorkspace, getWorkspaceContext } from "@/lib/workspaces";
 import { WorkflowBuilder } from "@/components/workflow-builder";
@@ -45,6 +47,8 @@ type PageProps = {
     gmailSkipped?: string;
     gmailError?: string;
     aiInstructionsSaved?: string;
+    slackTested?: string;
+    slackError?: string;
     settingsError?: string;
   }>;
 };
@@ -238,6 +242,16 @@ export default async function SettingsPage({ params, searchParams }: PageProps) 
                 : query.memberError === "last_owner"
                   ? "Cannot demote or remove the last remaining owner."
                   : "Member update failed."}
+          </div>
+        )}
+        {query.slackTested && (
+          <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-950 shadow-sm">
+            🔥 Slack webhook test alert dispatched successfully! Check your Slack channel.
+          </div>
+        )}
+        {query.slackError && (
+          <div className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-950 shadow-sm">
+            Slack Webhook Error: {query.slackError}
           </div>
         )}
         {!canManageMembers && (
@@ -518,6 +532,41 @@ export default async function SettingsPage({ params, searchParams }: PageProps) 
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Section 5: Slack Alert Webhook */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="border-b border-slate-100 pb-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-teal-800">Slack Integration</p>
+            <h3 className="mt-1 text-xl font-bold text-slate-900">Hot Lead Webhook Notifications</h3>
+            <p className="mt-1 text-sm font-medium text-slate-600">
+              Receive instant Slack channel alerts when new high-priority or high-scoring leads are detected.
+            </p>
+          </div>
+
+          <form action={testSlackWebhookAction} className="mt-5 space-y-4">
+            <input type="hidden" name="workspaceSlug" value={workspace.slug} />
+            <div>
+              <label className="block text-xs font-bold text-slate-800">Slack Incoming Webhook URL</label>
+              <input
+                type="url"
+                name="slackWebhookUrl"
+                required
+                placeholder="https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK"
+                className="mt-1 w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-600 font-mono"
+              />
+            </div>
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-xs text-slate-500">
+                Dispatches a rich Slack Block Kit card featuring lead title, score, stage, contact email, and deep-link.
+              </p>
+              <FormSubmitButton
+                idleLabel="Send Test Slack Alert"
+                pendingLabel="Sending Alert..."
+                className="rounded-xl bg-teal-600 px-5 py-2 text-sm font-bold text-white shadow hover:bg-teal-500 transition"
+              />
+            </div>
+          </form>
         </section>
       </div>
     </AppShell>

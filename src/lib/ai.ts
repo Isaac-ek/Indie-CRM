@@ -381,35 +381,37 @@ export async function generateLeadIntelligence(params: {
     },
   });
 
-  for (const tagName of intelligence.tags) {
-    const tag = await prisma.tag.upsert({
-      where: {
-        tenantId_name: {
+  await Promise.all(
+    intelligence.tags.map(async (tagName) => {
+      const tag = await prisma.tag.upsert({
+        where: {
+          tenantId_name: {
+            tenantId: params.tenantId,
+            name: tagName,
+          },
+        },
+        update: {},
+        create: {
           tenantId: params.tenantId,
           name: tagName,
         },
-      },
-      update: {},
-      create: {
-        tenantId: params.tenantId,
-        name: tagName,
-      },
-    });
+      });
 
-    await prisma.leadTag.upsert({
-      where: {
-        leadId_tagId: {
+      await prisma.leadTag.upsert({
+        where: {
+          leadId_tagId: {
+            leadId: params.leadId,
+            tagId: tag.id,
+          },
+        },
+        update: {},
+        create: {
           leadId: params.leadId,
           tagId: tag.id,
         },
-      },
-      update: {},
-      create: {
-        leadId: params.leadId,
-        tagId: tag.id,
-      },
-    });
-  }
+      });
+    }),
+  );
 
   await prisma.aIGeneration.createMany({
     data: [
