@@ -67,7 +67,7 @@ jobs:
   deploy-aws-ecs:
     name: Continuous Deployment to AWS ECS
     needs: [quality-and-tests, docker-build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.AWS_ACCESS_KEY_ID != ''
     runs-on: ubuntu-latest
     environment: production
 

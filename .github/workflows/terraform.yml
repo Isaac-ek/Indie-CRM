@@ -45,7 +45,7 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     needs: terraform-lint-and-validate
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && secrets.AWS_ACCESS_KEY_ID != ''
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -98,7 +98,7 @@ jobs:
   terraform-apply:
     name: Terraform Apply (Production)
     needs: terraform-lint-and-validate
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.AWS_ACCESS_KEY_ID != ''
     runs-on: ubuntu-latest
     environment: production
     defaults:
