@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { LeadPriority, LeadSource, LeadStage, Prisma } from "@/generated/prisma/client";
 import {
   generateFollowUpRecommendation,
@@ -232,6 +232,13 @@ export async function addLeadNoteAction(formData: FormData) {
 
   const prisma = getPrismaClient();
 
+  // The note's tenant and its parent lead must belong to the same workspace.
+  const lead = await prisma.lead.findFirst({
+    where: { id: leadId, tenantId: workspace.id },
+    select: { id: true },
+  });
+  if (!lead) notFound();
+
   const note = await prisma.note.create({
     data: {
       tenantId: workspace.id,
@@ -288,7 +295,7 @@ export async function updateLeadWorkflowAction(formData: FormData) {
 
   const prisma = getPrismaClient();
 
-  await prisma.lead.updateMany({
+  const updated = await prisma.lead.updateMany({
     where: {
       id: leadId,
       tenantId: workspace.id,
@@ -300,6 +307,8 @@ export async function updateLeadWorkflowAction(formData: FormData) {
       followUpAt: followUpDate,
     },
   });
+
+  if (updated.count !== 1) notFound();
 
   await createAuditLog({
     tenantId: workspace.id,
@@ -325,9 +334,10 @@ export async function quickUpdateLeadAction(formData: FormData) {
   const leadId = requiredTrimmedString(formData, "leadId", { maxLength: 64 });
   const action = requiredTrimmedString(formData, "action", { maxLength: 40 });
   const workspace = await getWorkspaceContext(workspaceSlug);
+  const layoutQuery = formData.get("layout") === "kanban" ? "&layout=kanban" : "";
 
   if (workspace.mode !== "database" || !workspace.id) {
-    redirect(`/w/${workspaceSlug}/leads?quickUpdated=demo`);
+    redirect(`/w/${workspaceSlug}/leads?quickUpdated=demo${layoutQuery}`);
   }
 
   if (!canManageLeadRecords(workspace.membershipRole)) {
@@ -420,7 +430,7 @@ export async function quickUpdateLeadAction(formData: FormData) {
   });
 
   revalidateLeadPaths(workspaceSlug, leadId);
-  redirect(`/w/${workspaceSlug}/leads?quickUpdated=1`);
+  redirect(`/w/${workspaceSlug}/leads?quickUpdated=1${layoutQuery}`);
 }
 
 export async function updateLeadIntelligenceAction(formData: FormData) {

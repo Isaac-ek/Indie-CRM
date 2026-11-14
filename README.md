@@ -238,6 +238,8 @@ Open [http://localhost:3000](http://localhost:3000).
 npm run test
 ```
 
+For the database-backed browser workflow checks, see [Lead workflow verification](docs/workflow-verification.md). That suite verifies persisted stage changes, two authenticated users, role-denied deletion, and cross-workspace read/write rejection using an isolated local database.
+
 ## Demo Credentials
 
 When seeded, the default demo login is:

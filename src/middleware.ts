@@ -95,5 +95,7 @@ export default auth(async (req) => {
 });
 
 export const config = {
+  // The Redis limiter and structured logger require Node.js APIs.
+  runtime: "nodejs",
   matcher: ["/w/:path*", "/login", "/register"],
 };

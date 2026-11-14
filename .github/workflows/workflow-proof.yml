@@ -1,0 +1,50 @@
+name: CRM workflow proof
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-workflow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: indie_crm_workflow_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/indie_crm_workflow_ci
+      E2E_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/indie_crm_workflow_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run db:push
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:workflow -- --max-failures=1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: workflow-failure-evidence
+          path: test-results/workflow/
+          retention-days: 7

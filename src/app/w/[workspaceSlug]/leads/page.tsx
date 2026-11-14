@@ -300,12 +300,12 @@ export default async function LeadsPage({ params, searchParams }: PageProps) {
         {layoutMode === "kanban" ? (
           <KanbanBoard
             workspaceSlug={workspace.slug}
+            canEdit={canEditLeadRecords && workspace.mode === "database"}
             leads={filteredLeads.map((l) => ({
               id: l.id,
               title: l.title,
               stage: l.stage,
               priority: l.priority,
-              score: 75,
               contactName: l.name,
               company: l.company,
               tags: l.tags,

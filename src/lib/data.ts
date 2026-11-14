@@ -107,6 +107,7 @@ type LeadDetailData = {
   tagsValue: string;
   tagSuggestions: string[];
   tags: string[];
+  score?: number | null;
   messages: {
     id: string;
     direction: "INBOUND" | "OUTBOUND" | "INTERNAL";
@@ -1387,6 +1388,7 @@ export async function getLeadDetail(
       companyNotes: lead.contact.companyNotes ?? "No company notes saved yet.",
       company: lead.contact.company ?? "Independent",
       title: lead.title,
+      score: lead.score,
       stage: formatLeadStage(lead.stage),
       source: formatSource(lead.source),
       sourceValue: lead.source,

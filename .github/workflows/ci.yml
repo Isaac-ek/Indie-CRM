@@ -34,7 +34,7 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-      - name: Run Complete Test Suite (74 Tests)
+      - name: Run Complete Unit Test Suite
         run: npm run test
 
       - name: Next.js Production Build
@@ -67,9 +67,12 @@ jobs:
   deploy-aws-ecs:
     name: Continuous Deployment to AWS ECS
     needs: [quality-and-tests, docker-build]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.AWS_ACCESS_KEY_ID != ''
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     environment: production
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout Repository
@@ -77,6 +80,7 @@ jobs:
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
+        if: env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -85,13 +89,13 @@ jobs:
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-        if: env.AWS_ACCESS_KEY_ID != ''
+        if: env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build, Tag, and Push Image to Amazon ECR
-        if: env.AWS_ACCESS_KEY_ID != ''
+        if: env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: indie-crm
@@ -102,7 +106,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
 
       - name: Update ECS Service
-        if: env.AWS_ACCESS_KEY_ID != ''
+        if: env.AWS_ACCESS_KEY_ID != '' && env.AWS_SECRET_ACCESS_KEY != ''
         run: |
           aws ecs update-service \
             --cluster indie-crm-production-cluster \

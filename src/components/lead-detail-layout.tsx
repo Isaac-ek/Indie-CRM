@@ -9,6 +9,7 @@ type LeadDetailLayoutProps = {
   workspaceSlug: string;
   workspaceMode: "database" | "demo";
   canEditLeadRecords: boolean;
+  canDeleteLeadRecords: boolean;
   lead: {
     id: string;
     name: string;
@@ -82,6 +83,7 @@ export function LeadDetailLayout({
   workspaceSlug,
   workspaceMode,
   canEditLeadRecords,
+  canDeleteLeadRecords,
   lead,
   hasDistinctSummary,
   components,
@@ -108,7 +110,7 @@ export function LeadDetailLayout({
   const scoreDisplay =
     typeof lead.score === "number" && !Number.isNaN(lead.score)
       ? `${lead.score} / 100`
-      : "75 / 100";
+      : "Not scored";
 
   return (
     <div className="flex flex-col gap-6 text-slate-900">
@@ -136,7 +138,7 @@ export function LeadDetailLayout({
       )}
       {queryNotifications.workflowUpdated && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-950 shadow-sm">
-          Lead workflow & stage updated.
+          {queryNotifications.workflowUpdated === "demo" ? "Preview only: workflow changes were not saved. Connect a database to persist changes." : "Lead workflow & stage updated."}
         </div>
       )}
       {queryNotifications.intelligenceUpdated && (
@@ -156,7 +158,7 @@ export function LeadDetailLayout({
       )}
       {queryNotifications.permissionError && (
         <div className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-950 shadow-sm">
-          Only workspace owners and admins can edit lead settings or AI recommendations.
+          Your workspace role does not allow this action.
         </div>
       )}
       {queryNotifications.dangerError && (
@@ -507,7 +509,7 @@ export function LeadDetailLayout({
                         </div>
                       </form>
 
-                      <form action={components.deleteLeadAction} className="rounded-xl border border-rose-200 bg-white p-4">
+                      {canDeleteLeadRecords ? <form action={components.deleteLeadAction} className="rounded-xl border border-rose-200 bg-white p-4">
                         <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
                         <input type="hidden" name="leadId" value={lead.id} />
                         <label className="block text-xs font-bold text-rose-800">Type DELETE to confirm</label>
@@ -515,7 +517,7 @@ export function LeadDetailLayout({
                         <div className="mt-3 flex justify-end">
                           <FormSubmitButton idleLabel="Delete Permanently" pendingLabel="Deleting..." className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white" />
                         </div>
-                      </form>
+                      </form> : <p className="text-sm text-slate-600">Deleting leads requires an owner or admin. Members can edit leads and add notes.</p>}
                     </div>
                   </section>
                 </>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createVoiceNoteAction } from "@/lib/transcription";
+import { createVoiceNoteAction } from "@/lib/voice-note-actions";
 import { FormSubmitButton } from "@/components/form-submit-button";
 
 type VoiceNoteRecorderProps = {

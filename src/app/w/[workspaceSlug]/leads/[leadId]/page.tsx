@@ -14,7 +14,7 @@ import {
   generateFollowUpRecommendationAction,
 } from "@/lib/lead-actions";
 import { getLeadDetail, hasDistinctSummary } from "@/lib/data";
-import { canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
+import { canDeleteLeads, canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
 
 type PageProps = {
   params: Promise<{ workspaceSlug: string; leadId: string }>;
@@ -56,6 +56,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
         workspaceSlug={workspace.slug}
         workspaceMode={workspace.mode}
         canEditLeadRecords={canEditLeadRecords}
+        canDeleteLeadRecords={canDeleteLeads(workspace.membershipRole)}
         lead={lead}
         hasDistinctSummary={distinctSummary}
         queryNotifications={query}
