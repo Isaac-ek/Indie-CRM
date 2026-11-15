@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { ReactNode, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { VoiceNoteRecorder } from "@/components/voice-note-recorder";
 
 type LeadDetailLayoutProps = {
   workspaceSlug: string;
@@ -78,8 +75,6 @@ type LeadDetailLayoutProps = {
   };
 };
 
-type TabKey = "timeline" | "ai" | "notes" | "overview" | "settings";
-
 export function LeadDetailLayout({
   workspaceSlug,
   workspaceMode,
@@ -89,490 +84,341 @@ export function LeadDetailLayout({
   lead,
   hasDistinctSummary,
   components,
-  queryNotifications,
+  queryNotifications: query,
 }: LeadDetailLayoutProps) {
-  const [activeTab, setActiveTab] = useState<TabKey>("timeline");
-
-  useEffect(() => {
-    if (queryNotifications.noteCreated) {
-      setActiveTab("notes");
-    } else if (queryNotifications.draftCreated || queryNotifications.followUpRecommended) {
-      setActiveTab("ai");
-    } else if (queryNotifications.replySent) {
-      setActiveTab("timeline");
-    } else if (
-      queryNotifications.workflowUpdated ||
-      queryNotifications.intelligenceUpdated ||
-      queryNotifications.profileUpdated
-    ) {
-      setActiveTab("settings");
-    }
-  }, [queryNotifications]);
-
-  const scoreDisplay =
-    typeof lead.score === "number" && !Number.isNaN(lead.score)
-      ? `${lead.score} / 100`
-      : "Not scored";
-
+  const saved =
+    query.noteCreated ||
+    query.workflowUpdated ||
+    query.intelligenceUpdated ||
+    query.profileUpdated ||
+    query.draftCreated ||
+    query.replySent ||
+    query.followUpRecommended;
+  const preview = saved === "demo";
   return (
-    <div className="flex flex-col gap-6 text-slate-900">
-      {/* Notifications */}
-      {queryNotifications.noteCreated && (
-        <div className="rounded-xl border border-teal-300 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-950 shadow-sm">
-          {queryNotifications.noteCreated === "demo"
-            ? "Note creation is ready (demo mode)."
-            : "Note saved successfully."}
-        </div>
+    <div className="grid min-w-0 gap-5">
+      {saved && (
+        <p role="status" className="crm-notice">
+          {preview
+            ? "Preview only: changes were not saved."
+            : query.noteCreated
+              ? "Note saved successfully."
+              : query.workflowUpdated
+                ? "Lead workflow & stage updated."
+                : query.replySent
+                  ? "Outbound reply saved to conversation timeline."
+                  : query.draftCreated
+                    ? "Reply draft generated successfully."
+                    : "Lead updated."}
+        </p>
       )}
-      {queryNotifications.draftCreated && (
-        <div className="rounded-xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-950 shadow-sm">
-          {queryNotifications.draftCreated === "demo"
-            ? "Draft generation is ready (demo mode)."
-            : "Reply draft generated successfully."}
-        </div>
+      {(query.permissionError || query.dangerError) && (
+        <p
+          role="alert"
+          className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900"
+        >
+          {query.permissionError
+            ? "Your workspace role does not allow this action."
+            : "The confirmation did not match. No changes were made."}
+        </p>
       )}
-      {queryNotifications.replySent && (
-        <div className="rounded-xl border border-violet-300 bg-violet-50 px-4 py-3 text-sm font-medium text-violet-950 shadow-sm">
-          {queryNotifications.replySent === "demo"
-            ? "Outbound reply is ready (demo mode)."
-            : "Outbound reply saved to conversation timeline."}
+      <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 pb-5">
+        <div>
+          <Link
+            href={`/w/${workspaceSlug}/leads`}
+            className="text-xs font-medium text-teal-800 hover:underline"
+          >
+            ← Pipeline
+          </Link>
+          <p className="mt-3 text-base font-medium text-slate-800">
+            {lead.title}
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            {lead.company || "Independent contact"}
+          </p>
         </div>
-      )}
-      {queryNotifications.workflowUpdated && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-950 shadow-sm">
-          {queryNotifications.workflowUpdated === "demo" ? "Preview only: workflow changes were not saved. Connect a database to persist changes." : "Lead workflow & stage updated."}
-        </div>
-      )}
-      {queryNotifications.intelligenceUpdated && (
-        <div className="rounded-xl border border-teal-300 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-950 shadow-sm">
-          Lead intelligence updated.
-        </div>
-      )}
-      {queryNotifications.profileUpdated && (
-        <div className="rounded-xl border border-cyan-300 bg-cyan-50 px-4 py-3 text-sm font-medium text-cyan-950 shadow-sm">
-          Lead profile updated.
-        </div>
-      )}
-      {queryNotifications.followUpRecommended && (
-        <div className="rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-950 shadow-sm">
-          AI follow-up recommendation generated and applied.
-        </div>
-      )}
-      {queryNotifications.permissionError && (
-        <div className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-950 shadow-sm">
-          Your workspace role does not allow this action.
-        </div>
-      )}
-      {queryNotifications.dangerError && (
-        <div className="rounded-xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-950 shadow-sm">
-          {queryNotifications.dangerError}
-        </div>
-      )}
-
-      {/* Header Hero Card */}
-      <header className="rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-xl">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Link
-                href={`/w/${workspaceSlug}/leads`}
-                className="text-xs font-bold uppercase tracking-wider text-teal-400 hover:text-teal-300"
-              >
-                ← Back to Inbox
-              </Link>
-              <span className="rounded-full border border-teal-500/40 bg-teal-950/60 px-3 py-0.5 text-xs font-semibold text-teal-300">
-                {lead.stage}
-              </span>
-              <span className="rounded-full border border-slate-700 bg-slate-800 px-3 py-0.5 text-xs font-medium text-slate-300">
-                {lead.source}
-              </span>
-              <span className="rounded-full border border-amber-500/40 bg-amber-950/60 px-3 py-0.5 text-xs font-semibold text-amber-300">
-                Priority: {lead.priority}
-              </span>
-            </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              {lead.name}
-            </h1>
-            <p className="mt-1 text-base text-slate-300">
-              {lead.title} {lead.company ? `• ${lead.company}` : ""}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setActiveTab("timeline")}
-              className="rounded-xl bg-teal-500 px-4 py-2.5 text-sm font-bold text-slate-950 shadow hover:bg-teal-400 transition"
+        <div className="flex flex-wrap items-center gap-2">
+          {canEditLeadRecords && (
+            <a
+              href="#internal-note"
+              className="crm-button crm-button-secondary"
             >
-              💬 Reply Workflow
-            </button>
-            {!publicDemo && <button
-              onClick={() => setActiveTab("ai")}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-slate-700 transition"
-            >
-              🤖 AI Insights
-            </button>}
-            <button
-              onClick={() => setActiveTab("notes")}
-              className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-slate-700 transition"
-            >
-              📝 Add Note
-            </button>
-          </div>
-        </div>
-
-        {/* Quick Stat Cards */}
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-xl border border-slate-800 bg-slate-800/80 p-3.5 shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Contact</p>
-            <p className="mt-1 truncate text-sm font-semibold text-white">{lead.email || "No email"}</p>
-            <p className="text-xs text-slate-400">{lead.phone || "No phone"}</p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-800/80 p-3.5 shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Next Follow-Up</p>
-            <p className="mt-1 text-sm font-semibold text-teal-300">{lead.followUp || "Not scheduled"}</p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-800/80 p-3.5 shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Lead Score</p>
-            <p className="mt-1 text-sm font-semibold text-amber-300">{scoreDisplay}</p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-800/80 p-3.5 shadow-sm">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Next Action</p>
-            <p className="mt-1 truncate text-sm font-semibold text-white">{lead.nextAction}</p>
-          </div>
+              Add note
+            </a>
+          )}
+          <span className="rounded-md border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-900">
+            {lead.stage}
+          </span>
+          <span className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600">
+            {lead.priority} priority
+          </span>
+          {lead.isArchived && (
+            <span className="text-xs text-slate-500">Archived</span>
+          )}
         </div>
       </header>
-
-      {/* Categorized Tab Bar */}
-      <nav className="flex flex-wrap items-center gap-1.5 rounded-2xl border border-slate-300/80 bg-slate-200/80 p-1.5 shadow-inner">
-        {[
-          { key: "timeline", label: "💬 Activity & Messages", count: lead.notes.length + lead.aiOutputs.length },
-          { key: "ai", label: "🤖 AI Assistance & Memory", count: lead.similarLeads.length },
-          { key: "notes", label: "📝 Team Notes", count: lead.notes.length },
-          { key: "overview", label: "👤 Profile Overview" },
-          { key: "settings", label: "⚙️ Workflow & Settings" },
-        ].filter((tab) => !publicDemo || tab.key !== "ai").map((tab) => {
-          const isActive = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key as TabKey)}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
-                isActive
-                  ? "bg-slate-900 text-white shadow"
-                  : "text-slate-700 hover:bg-slate-300/60 hover:text-slate-900"
-              }`}
-            >
-              {tab.label}
-              {tab.count !== undefined && tab.count > 0 && (
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-extrabold ${
-                    isActive ? "bg-teal-500 text-slate-950" : "bg-slate-300 text-slate-800"
-                  }`}
-                >
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Categorized Content Area */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* Main Workspace Column */}
-        <main className="min-w-0">
-          {/* TAB 1: Activity & Messages */}
-          {activeTab === "timeline" && (
-            <div className="space-y-6">
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-slate-900">Compose Outbound Reply</h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Send your next response directly from this lead record.
-                </p>
-                <div className="mt-4">{components.replyComposer}</div>
-              </section>
-
-              {components.activityTimeline}
-            </div>
+      <div className="grid min-w-0 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <aside
+          aria-label="Next action and lead details"
+          className="grid min-w-0 gap-4 xl:col-start-2 xl:row-start-1"
+        >
+          <section className="rounded-xl border border-teal-200 bg-white p-5">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-teal-800">
+              Next action
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-800">
+              {lead.nextAction || "Choose a next step for this lead."}
+            </p>
+            <p className="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">
+              Follow-up{" "}
+              <strong className="ml-2 font-semibold text-slate-800">
+                {lead.followUp || "Unscheduled"}
+              </strong>
+            </p>
+            {canEditLeadRecords && (
+              <details open={!!query.intelligenceUpdated} className="mt-4">
+                <summary className="cursor-pointer text-xs font-medium text-teal-800 underline underline-offset-4">
+                  Edit next action, summary & tags
+                </summary>
+                <div className="mt-3">{components.leadIntelligenceForm}</div>
+              </details>
+            )}
+          </section>
+          {canEditLeadRecords ? (
+            <section className="crm-panel">
+              <h2 className="mb-4 text-sm font-semibold">Stage & follow-up</h2>
+              {components.leadWorkflowForm}
+            </section>
+          ) : (
+            <p className="text-xs text-slate-500">
+              You have read-only access to this lead.
+            </p>
           )}
-
-          {/* TAB 2: AI Assistance & Memory */}
-          {activeTab === "ai" && (
-            <div className="space-y-6">
-              {/* AI Summary Box */}
-              <section className="rounded-2xl border border-teal-200 bg-white p-6 shadow-sm">
-                <div className="inline-flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-900">
-                  🤖 AI Intelligence Summary
-                </div>
-                <p className="mt-4 text-base font-medium leading-relaxed text-slate-900">
-                  {hasDistinctSummary
-                    ? lead.summary
-                    : "AI summary is currently synthesized from initial lead inquiry."}
-                </p>
-
-                <div className="mt-4 rounded-xl border border-teal-200 bg-teal-50/80 p-4">
-                  <p className="text-xs font-bold uppercase tracking-wider text-teal-900">
-                    Recommended Next Action:
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-slate-900">{lead.nextAction}</p>
-                </div>
-              </section>
-
-              {/* AI Follow-up Action Form */}
-              {canEditLeadRecords && (
-                <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <form action={components.followUpRecommendationAction}>
-                    <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
-                    <input type="hidden" name="leadId" value={lead.id} />
-                    <h3 className="text-lg font-bold text-slate-900">Generate AI Follow-up Recommendation</h3>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Calculates optimal follow-up timing and updates lead next action automatically.
-                    </p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <span className="text-xs text-slate-500">
-                        {workspaceMode === "database" ? "Updates database state" : "Demo mode"}
-                      </span>
-                      <FormSubmitButton
-                        idleLabel="Recommend Follow-up"
-                        pendingLabel="Recommending..."
-                        className="rounded-xl bg-teal-600 px-5 py-2.5 text-sm font-bold text-white shadow hover:bg-teal-500 transition"
-                      />
-                    </div>
-                  </form>
-                </section>
-              )}
-
-              {/* AI Draft Generator Form */}
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                {components.replyDraftForm}
-              </section>
-
-              {/* Similar Memory */}
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900">Semantic Memory: Related Past Leads</h3>
-                <p className="mt-1 text-sm text-slate-600">
-                  Leads from workspace memory with similar semantic context.
-                </p>
-
-                <div className="mt-4 space-y-4">
-                  {lead.similarLeads.length > 0 ? (
-                    lead.similarLeads.map((item) => (
-                      <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="flex items-center justify-between">
-                          <Link
-                            href={`/w/${workspaceSlug}/leads/${item.id}`}
-                            className="font-bold text-teal-800 hover:underline"
-                          >
-                            {item.name} ({item.company})
-                          </Link>
-                          <span className="rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-900">
-                            {item.score}% similarity
-                          </span>
-                        </div>
-                        <p className="mt-2 text-sm text-slate-700">{item.summary}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">No close semantic matches found yet.</p>
-                  )}
-                </div>
-              </section>
-
-              {/* AI Provenance History */}
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900">AI Provenance History</h3>
-                <div className="mt-4 space-y-3">
-                  {lead.aiOutputs.length > 0 ? (
-                    lead.aiOutputs.map((out) => (
-                      <div key={out.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{out.label}</p>
-                        <p className="mt-1 text-sm text-slate-800">{out.body}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">No previous AI runs logged for this lead.</p>
-                  )}
-                </div>
-              </section>
-            </div>
-          )}
-
-          {/* TAB 3: Team Notes */}
-          {activeTab === "notes" && (
-            <div className="space-y-6">
-              {!publicDemo && <VoiceNoteRecorder
-                workspaceSlug={workspaceSlug}
-                leadId={lead.id}
-                canEdit={canEditLeadRecords}
-              />}
-
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-slate-900">Team Notes & Internal Memory</h2>
-                <div className="mt-4">{components.leadNoteForm}</div>
-              </section>
-
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900">Saved Internal Notes</h3>
-                <div className="mt-4 space-y-4">
-                  {lead.notes.length > 0 ? (
-                    lead.notes.map((note) => (
-                      <article key={note.id} className="rounded-xl border border-amber-200 bg-amber-50/60 p-4">
-                        <p className="text-sm font-medium text-slate-900">{note.content}</p>
-                        <p className="mt-2 text-xs font-bold uppercase text-slate-500">
-                          {note.author} • {note.createdAt}
-                        </p>
-                      </article>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-500">No internal notes added yet.</p>
-                  )}
-                </div>
-              </section>
-            </div>
-          )}
-
-          {/* TAB 4: Profile Overview */}
-          {activeTab === "overview" && (
-            <div className="space-y-6">
-              <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <h2 className="text-xl font-bold text-slate-900">Contact & Company Profile</h2>
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Full Name</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.name}</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Email Address</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.email}</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Company</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.company || "N/A"}</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Phone</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.phone || "N/A"}</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Industry</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.industry || "N/A"}</p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Website</p>
-                    <p className="mt-1 text-base font-semibold text-slate-900">{lead.website || "N/A"}</p>
-                  </div>
-                </div>
-
-                {lead.companyNotes && (
-                  <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">Company Background</p>
-                    <p className="mt-2 text-sm leading-relaxed text-slate-800">{lead.companyNotes}</p>
-                  </div>
-                )}
-              </section>
-            </div>
-          )}
-
-          {/* TAB 5: Settings & Workflow Forms */}
-          {activeTab === "settings" && (
-            <div className="space-y-6">
-              {canEditLeadRecords ? (
-                <>
-                  <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="text-lg font-bold text-slate-900">Edit Contact Profile</h3>
-                    <div className="mt-4">{components.leadProfileForm}</div>
-                  </section>
-
-                  <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="text-lg font-bold text-slate-900">Edit Saved AI Intelligence</h3>
-                    <div className="mt-4">{components.leadIntelligenceForm}</div>
-                  </section>
-
-                  <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <h3 className="text-lg font-bold text-slate-900">Edit Stage, Priority & Follow-Up</h3>
-                    <div className="mt-4">{components.leadWorkflowForm}</div>
-                  </section>
-
-                  {/* Danger Zone */}
-                  <section className="rounded-2xl border border-rose-200 bg-rose-50/60 p-6">
-                    <h3 className="text-lg font-bold text-rose-900">Danger Zone: Archive or Delete</h3>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Permanently delete or archive this lead record.
-                    </p>
-
-                    <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                      <form action={components.archiveLeadAction} className="rounded-xl border border-rose-200 bg-white p-4">
-                        <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
-                        <input type="hidden" name="leadId" value={lead.id} />
-                        <label className="block text-xs font-bold text-slate-800">Type ARCHIVE to confirm</label>
-                        <input name="confirmation" placeholder="ARCHIVE" className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900" />
-                        <div className="mt-3 flex justify-end">
-                          <FormSubmitButton idleLabel="Archive Lead" pendingLabel="Archiving..." className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white" />
-                        </div>
-                      </form>
-
-                      {canDeleteLeadRecords ? <form action={components.deleteLeadAction} className="rounded-xl border border-rose-200 bg-white p-4">
-                        <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
-                        <input type="hidden" name="leadId" value={lead.id} />
-                        <label className="block text-xs font-bold text-rose-800">Type DELETE to confirm</label>
-                        <input name="confirmation" placeholder="DELETE" className="mt-2 w-full rounded-lg border border-rose-300 px-3 py-2 text-sm text-slate-900" />
-                        <div className="mt-3 flex justify-end">
-                          <FormSubmitButton idleLabel="Delete Permanently" pendingLabel="Deleting..." className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white" />
-                        </div>
-                      </form> : <p className="text-sm text-slate-600">Deleting leads requires an owner or admin. Members can edit leads and add notes.</p>}
-                    </div>
-                  </section>
-                </>
-              ) : (
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
-                  Read-only workflow: Only owners and admins can modify lead settings or pipeline stages.
-                </div>
-              )}
-            </div>
-          )}
-        </main>
-
-        {/* Sidebar Controls */}
-        <aside className="flex flex-col gap-6">
-          {/* Quick Details Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Quick Details</h3>
-            <dl className="mt-4 divide-y divide-slate-100 text-sm">
-              <div className="flex justify-between py-2.5">
-                <dt className="text-slate-500">Stage</dt>
-                <dd className="font-bold text-slate-900">{lead.stage}</dd>
+          <details className="crm-panel" open={!!query.profileUpdated}>
+            <summary className="cursor-pointer text-sm font-semibold">
+              Contact details
+            </summary>
+            <dl className="mt-4 grid gap-3 break-words text-xs">
+              <div>
+                <dt className="text-slate-500">Email</dt>
+                <dd className="mt-1 text-slate-700">
+                  {lead.email || "No email added"}
+                </dd>
               </div>
-              <div className="flex justify-between py-2.5">
-                <dt className="text-slate-500">Priority</dt>
-                <dd className="font-bold text-slate-900">{lead.priority}</dd>
-              </div>
-              <div className="flex justify-between py-2.5">
+              {lead.phone && (
+                <div>
+                  <dt className="text-slate-500">Phone</dt>
+                  <dd className="mt-1 text-slate-700">{lead.phone}</dd>
+                </div>
+              )}
+              {lead.website && (
+                <div>
+                  <dt className="text-slate-500">Website</dt>
+                  <dd className="mt-1 text-slate-700">{lead.website}</dd>
+                </div>
+              )}
+              {lead.industry && (
+                <div>
+                  <dt className="text-slate-500">Industry</dt>
+                  <dd className="mt-1 text-slate-700">{lead.industry}</dd>
+                </div>
+              )}
+              <div>
                 <dt className="text-slate-500">Source</dt>
-                <dd className="font-bold text-slate-900">{lead.source}</dd>
-              </div>
-              <div className="flex justify-between py-2.5">
-                <dt className="text-slate-500">Follow-up</dt>
-                <dd className="font-bold text-teal-700">{lead.followUp}</dd>
+                <dd className="mt-1 text-slate-700">{lead.source}</dd>
               </div>
             </dl>
-          </div>
-
-          {/* Quick Tags Box */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Lead Tags</h3>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {lead.tags.length > 0 ? (
-                lead.tags.map((tag) => (
-                  <span key={tag} className="rounded-lg bg-teal-100 px-2.5 py-1 text-xs font-bold text-teal-900">
-                    #{tag}
+            {lead.companyNotes && (
+              <p className="mt-4 text-xs leading-5 text-slate-600">
+                {lead.companyNotes}
+              </p>
+            )}
+            {lead.tags.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1">
+                {lead.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded bg-slate-100 px-2 py-1 text-[11px] text-slate-600"
+                  >
+                    {tag}
                   </span>
-                ))
-              ) : (
-                <span className="text-xs text-slate-400">No tags assigned</span>
-              )}
-            </div>
-          </div>
+                ))}
+              </div>
+            )}
+            {canEditLeadRecords && (
+              <details open={!!query.profileUpdated} className="mt-4">
+                <summary className="cursor-pointer text-xs font-medium text-teal-800 underline underline-offset-4">
+                  Edit contact
+                </summary>
+                <div className="mt-3">{components.leadProfileForm}</div>
+              </details>
+            )}
+          </details>
+          {canEditLeadRecords && (
+            <details className="rounded-lg border border-slate-200 bg-white p-4">
+              <summary className="cursor-pointer text-xs text-slate-500">
+                Archive or delete
+              </summary>
+              <div className="mt-4 grid gap-4">
+                <form
+                  action={components.archiveLeadAction}
+                  className="grid gap-2"
+                >
+                  <input
+                    type="hidden"
+                    name="workspaceSlug"
+                    value={workspaceSlug}
+                  />
+                  <input type="hidden" name="leadId" value={lead.id} />
+                  <label className="crm-label">
+                    Type ARCHIVE to confirm
+                    <input
+                      name="confirmation"
+                      placeholder="ARCHIVE"
+                      className="crm-input"
+                    />
+                  </label>
+                  <FormSubmitButton
+                    idleLabel="Archive Lead"
+                    pendingLabel="Archiving..."
+                    className="crm-button crm-button-secondary"
+                  />
+                </form>
+                {canDeleteLeadRecords ? (
+                  <form
+                    action={components.deleteLeadAction}
+                    className="grid gap-2 border-t border-slate-100 pt-4"
+                  >
+                    <input
+                      type="hidden"
+                      name="workspaceSlug"
+                      value={workspaceSlug}
+                    />
+                    <input type="hidden" name="leadId" value={lead.id} />
+                    <p className="text-xs leading-5 text-slate-500">
+                      Permanently removes this lead and its conversation.
+                    </p>
+                    <label className="crm-label">
+                      Type DELETE to confirm
+                      <input
+                        name="confirmation"
+                        placeholder="DELETE"
+                        className="crm-input"
+                      />
+                    </label>
+                    <FormSubmitButton
+                      idleLabel="Delete Permanently"
+                      pendingLabel="Deleting..."
+                      className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-800"
+                    />
+                  </form>
+                ) : (
+                  <p className="text-xs leading-5 text-slate-500">
+                    Deleting leads requires an owner or admin. Members can edit
+                    leads and add notes.
+                  </p>
+                )}
+              </div>
+            </details>
+          )}
         </aside>
+        <div className="grid min-w-0 gap-5 xl:col-start-1 xl:row-start-1">
+          {hasDistinctSummary && (
+            <section className="crm-panel">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+                Brief
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-slate-700">
+                {lead.summary}
+              </p>
+            </section>
+          )}
+          {canEditLeadRecords && (
+            <section id="internal-note" className="crm-panel scroll-mt-5">
+              <h2 className="mb-4 text-sm font-semibold">Add a note</h2>
+              {components.leadNoteForm}
+            </section>
+          )}
+          {components.activityTimeline}
+          <details
+            id="reply-composer"
+            open={!!query.replySent}
+            className="crm-panel scroll-mt-5"
+          >
+            <summary className="cursor-pointer text-sm font-semibold">
+              Record an outbound reply
+            </summary>
+            <p className="mt-2 text-xs leading-5 text-slate-500">
+              Keep a copy of your reply here. This does not send an email.
+            </p>
+            <div className="mt-4">{components.replyComposer}</div>
+          </details>
+          {!publicDemo && (
+            <details
+              open={!!query.draftCreated || !!query.followUpRecommended}
+              className="crm-panel"
+            >
+              <summary className="cursor-pointer text-sm font-semibold">
+                AI assistance & related leads
+              </summary>
+              <p className="mt-3 text-xs leading-5 text-slate-500">
+                Review suggestions before using them.{" "}
+                {workspaceMode === "demo"
+                  ? "Preview mode uses sample data."
+                  : "Available suggestions depend on the workspace’s configured provider."}
+              </p>
+              <div className="mt-5 grid gap-5">
+                {canEditLeadRecords && (
+                  <form action={components.followUpRecommendationAction}>
+                    <input
+                      type="hidden"
+                      name="workspaceSlug"
+                      value={workspaceSlug}
+                    />
+                    <input type="hidden" name="leadId" value={lead.id} />
+                    <p className="mb-3 text-xs text-slate-500">
+                      This updates the next action and follow-up date on this
+                      lead.
+                    </p>
+                    <FormSubmitButton
+                      idleLabel="Recommend Follow-up"
+                      pendingLabel="Recommending..."
+                      className="crm-button crm-button-secondary"
+                    />
+                  </form>
+                )}
+                {components.replyDraftForm}
+                <section>
+                  <h3 className="text-sm font-medium">Related leads</h3>
+                  <div className="mt-3 grid gap-3">
+                    {lead.similarLeads.length ? (
+                      lead.similarLeads.map((item) => (
+                        <article
+                          key={item.id}
+                          className="rounded-lg border border-slate-200 p-3"
+                        >
+                          <Link
+                            href={`/w/${workspaceSlug}/leads/${item.id}`}
+                            className="text-sm font-semibold text-teal-800 hover:underline"
+                          >
+                            {item.name} · {item.company}
+                          </Link>
+                          <p className="mt-2 text-xs leading-5 text-slate-500">
+                            {item.summary}
+                          </p>
+                        </article>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-500">
+                        No related leads yet.
+                      </p>
+                    )}
+                  </div>
+                </section>
+              </div>
+            </details>
+          )}
+        </div>
       </div>
     </div>
   );

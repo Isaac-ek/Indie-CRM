@@ -26,11 +26,11 @@ test("public visitors save a real workflow and get separate workspaces", async (
     await page.getByRole("combobox", { name: "Move Maya Chen to stage", exact: true }).selectOption("Qualified");
     await expect(page.getByRole("region", { name: "Qualified pipeline", exact: true }).getByRole("link", { name: "Juniper website launch", exact: true })).toBeVisible();
     await page.goto(`/w/${slug}/leads/${lead.id}`);
-    await page.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
     await page.getByLabel("Follow-up date", { exact: true }).fill("2099-06-10");
     await page.getByRole("button", { name: "Save workflow", exact: true }).click();
     await expect(page).toHaveURL(/workflowUpdated=1/);
-    await page.getByRole("button", { name: "📝 Add Note", exact: true }).click();
+
     const note = `Juniper discovery checkpoint ${randomUUID()}`;
     await page.getByLabel("Add internal note", { exact: true }).fill(note);
     await page.getByRole("button", { name: "Save note", exact: true }).click();
@@ -67,7 +67,7 @@ test("an expired database session cannot write and restarting removes only its t
     const demo = await database.publicDemo.findFirstOrThrow({ where: { tenant: { slug } } });
     const lead = await database.lead.findFirstOrThrow({ where: { tenantId: demo.tenantId, stage: "NEW" } });
     await page.goto(`/w/${slug}/leads/${lead.id}`);
-    await page.getByRole("button", { name: "📝 Add Note", exact: true }).click();
+
     await page.getByLabel("Add internal note", { exact: true }).fill("Must not be saved after expiry");
     // JWT remains valid: the server must also check the database lifecycle record.
     await database.publicDemo.update({ where: { id: demo.id }, data: { expiresAt: new Date(Date.now() - 1000) } });

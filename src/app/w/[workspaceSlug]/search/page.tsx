@@ -32,31 +32,10 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
       currentPath="/search"
       workspace={workspace}
       eyebrow="Conversation Memory"
-      title={workspace.publicDemo ? "Find a lead or note" : "Semantic Search & Grounded Context"}
-      description={workspace.publicDemo ? "Search the sample leads and notes saved in your temporary workspace. This demo uses keyword matching and local sample logic." : "Hybrid keyword and vector semantic search across past conversations, lead notes, and AI outputs."}
+      title="Search"
+      description="Find a client, a conversation, or the note you remember."
     >
       <div className="flex flex-col gap-6 text-slate-900">
-        {/* Section 1: Search Header Hero Card */}
-        <header className="rounded-2xl border border-slate-800 bg-slate-900 p-6 text-white shadow-xl">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-teal-400">
-                Workspace Memory
-              </p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                {workspace.publicDemo ? "Search your sample pipeline" : "Semantic Client Memory"}
-              </h1>
-              <p className="mt-2 max-w-3xl text-sm font-medium text-slate-300 leading-relaxed">
-                {workspace.publicDemo ? "Try a client name, a project detail, or a phrase from a note you just saved." : "Recalls past lead requirements, prior objections, budget signals, and conversation history using stored vector embeddings."}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-slate-800 bg-slate-800 px-4 py-3 text-sm font-semibold text-teal-300">
-              {search.searchedCount} lead{search.searchedCount === 1 ? "" : "s"} indexed
-            </div>
-          </div>
-        </header>
-
         {/* Section 2: Search Input & Quick Suggestions */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form className="flex flex-col gap-3">

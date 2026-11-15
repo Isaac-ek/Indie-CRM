@@ -16,8 +16,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, monospace;
 }
 
 * {
@@ -33,11 +33,23 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background-image:
-    radial-gradient(circle at top left, rgba(45, 212, 191, 0.22), transparent 28%),
-    radial-gradient(circle at 85% 15%, rgba(251, 191, 36, 0.18), transparent 22%),
-    radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.14), transparent 28%),
+    radial-gradient(
+      circle at top left,
+      rgba(45, 212, 191, 0.22),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(251, 191, 36, 0.18),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(56, 189, 248, 0.14),
+      transparent 28%
+    ),
     linear-gradient(180deg, #08111f 0%, #0b1728 48%, #0d1a2d 100%);
   min-height: 100vh;
   overflow-x: hidden;
@@ -51,4 +63,84 @@ a {
 ::selection {
   background: rgba(45, 212, 191, 0.28);
   color: #f8fafc;
+}
+
+.crm-app {
+  color-scheme: light;
+}
+.crm-app :where(input, select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+}
+.crm-app :where(button, summary, a, input, select, textarea):focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 3px;
+}
+.crm-panel {
+  border: 1px solid #e2e8e5;
+  border-radius: 12px;
+  background: white;
+  padding: 20px;
+}
+.crm-label {
+  display: grid;
+  gap: 6px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+}
+.crm-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: white;
+  padding: 9px 11px;
+  color: #0f172a;
+  font-size: 14px;
+}
+.crm-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #0f766e;
+  border-radius: 7px;
+  background: #0f766e;
+  padding: 9px 14px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.crm-button:hover {
+  background: #115e59;
+}
+.crm-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+.crm-button-secondary {
+  border-color: #cbd5e1;
+  background: white;
+  color: #334155;
+}
+.crm-button-secondary:hover {
+  background: #f1f5f9;
+}
+.crm-notice {
+  border: 1px solid #99d7c8;
+  border-radius: 8px;
+  background: #effbf7;
+  padding: 12px 16px;
+  color: #134e4a;
+  font-size: 13px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .crm-app *,
+  .crm-app *::before,
+  .crm-app *::after {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
