@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const geistSans = { variable: "font-sans" };
-const geistMono = { variable: "font-mono" };
-
 export const metadata: Metadata = {
-  title: "Indie CRM with AI Tagging",
+  title: "Indie CRM",
   description:
-    "A multi-tenant AI-assisted CRM for solo operators that turns lead conversations into searchable client intelligence.",
+    "A focused CRM for independent teams to manage leads, follow up, and find client history.",
 };
 
 export default function RootLayout({
@@ -16,11 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         {children}
       </body>

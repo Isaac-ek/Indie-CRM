@@ -14,7 +14,11 @@ import {
   generateFollowUpRecommendationAction,
 } from "@/lib/lead-actions";
 import { getLeadDetail, hasDistinctSummary } from "@/lib/data";
-import { canDeleteLeads, canManageLeadRecords, getWorkspaceContext } from "@/lib/workspaces";
+import {
+  canDeleteLeads,
+  canManageLeadRecords,
+  getWorkspaceContext,
+} from "@/lib/workspaces";
 
 type PageProps = {
   params: Promise<{ workspaceSlug: string; leadId: string }>;
@@ -31,7 +35,10 @@ type PageProps = {
   }>;
 };
 
-export default async function LeadDetailPage({ params, searchParams }: PageProps) {
+export default async function LeadDetailPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { workspaceSlug, leadId } = await params;
   const query = await searchParams;
   const workspace = await getWorkspaceContext(workspaceSlug);
@@ -42,7 +49,10 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
     notFound();
   }
 
-  const distinctSummary = hasDistinctSummary(lead.summary, lead.messages[0]?.content ?? "");
+  const distinctSummary = hasDistinctSummary(
+    lead.summary,
+    lead.messages[0]?.content ?? "",
+  );
 
   return (
     <AppShell
@@ -50,7 +60,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
       workspace={workspace}
       eyebrow="Lead Record"
       title={lead.name}
-      description="Categorized & structured lead workspace: view communication timeline, AI intelligence, internal team memory, and profile settings."
+      description=""
     >
       <LeadDetailLayout
         workspaceSlug={workspace.slug}
@@ -71,10 +81,6 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
           ),
           activityTimeline: (
             <LeadActivityTimeline
-              leadName={lead.name}
-              stage={lead.stage}
-              followUp={lead.followUp}
-              nextAction={lead.nextAction}
               messages={lead.messages}
               notes={lead.notes}
               aiOutputs={lead.aiOutputs}

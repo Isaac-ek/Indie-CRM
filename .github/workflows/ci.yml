@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main, codex/crm-workflow-proof]
+    branches: [main, codex/crm-workflow-proof, codex/crm-public-demo]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

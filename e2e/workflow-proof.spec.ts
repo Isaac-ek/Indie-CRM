@@ -34,6 +34,7 @@ test("dragging a lead saves the selected stage and keeps the board open", async 
 test("create, qualify, schedule, share a note and retrieve the lead across two real users", async ({ page, browser, scenario, database }) => {
   await login(page, scenario.owner.email);
   await page.goto(`/w/${scenario.workspace.slug}/leads`);
+  await page.getByText("＋ Add lead", { exact: true }).click();
   await page.getByLabel("Lead Name", { exact: true }).fill("Maya Proof");
   const email = `maya-${scenario.key}@workflow.test`;
   await page.getByLabel("Email Address", { exact: true }).fill(email);
@@ -52,7 +53,7 @@ test("create, qualify, schedule, share a note and retrieve the lead across two r
     await teammate.goto(detailPath);
     await expect(teammate.locator("main header").getByText("New", { exact: true })).toBeVisible();
     await page.goto(detailPath);
-    await page.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
     await page.getByRole("combobox", { name: "Stage", exact: true }).selectOption("Qualified");
     await page.getByLabel("Follow-up date", { exact: true }).fill("2099-06-10");
     await page.getByRole("button", { name: "Save workflow", exact: true }).click();
@@ -64,9 +65,9 @@ test("create, qualify, schedule, share a note and retrieve the lead across two r
     await expect(teammate.locator("main header").getByText("New", { exact: true })).toBeVisible();
     await teammate.reload();
     await expect(teammate.locator("main header").getByText("Qualified", { exact: true })).toBeVisible();
-    await teammate.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
     await expect(teammate.getByLabel("Follow-up date", { exact: true })).toHaveValue("2099-06-10");
-    await teammate.getByRole("button", { name: "📝 Add Note", exact: true }).click();
+
     const note = `Discovery checkpoint ${scenario.key}: agreed a sample scope and next action.`;
     await teammate.getByLabel("Add internal note", { exact: true }).fill(note);
     await teammate.getByRole("button", { name: "Save note", exact: true }).click();
@@ -75,7 +76,7 @@ test("create, qualify, schedule, share a note and retrieve the lead across two r
     expect(savedNote.tenantId).toBe(scenario.workspace.id);
     expect(savedNote.authorId).toBe(scenario.member.id);
     await page.reload();
-    await page.getByRole("button", { name: "📝 Add Note", exact: true }).click();
+
     await expect(page.getByText(note, { exact: true })).toBeVisible();
     await page.goto(`/w/${scenario.workspace.slug}/search`);
     await page.getByLabel("Search Client Memory", { exact: true }).fill(`Discovery checkpoint ${scenario.key}`);
@@ -90,7 +91,7 @@ test("a member cannot delete a lead even when submitting an owner's deletion for
   const detailPath = `/w/${scenario.workspace.slug}/leads/${lead.id}`;
   await login(page, scenario.owner.email);
   await page.goto(detailPath);
-  await page.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
   // Capture a genuine server-action request, aborting it before the owner's delete reaches the server.
   let deletion: { headers: Record<string, string>; body: Buffer } | undefined;
   await page.route(`**${detailPath}`, async (route) => {
@@ -100,6 +101,7 @@ test("a member cannot delete a lead even when submitting an owner's deletion for
       await route.abort();
     } else await route.continue();
   });
+  await page.getByText("Archive or delete", { exact: true }).click();
   await page.getByPlaceholder("DELETE", { exact: true }).fill("DELETE");
   await page.getByRole("button", { name: "Delete Permanently", exact: true }).click();
   await expect.poll(() => !!deletion).toBe(true);
@@ -108,7 +110,7 @@ test("a member cannot delete a lead even when submitting an owner's deletion for
     const member = await memberContext.newPage();
     await login(member, scenario.member.email);
     await member.goto(detailPath);
-    await member.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
     await expect(member.getByRole("button", { name: "Delete Permanently", exact: true })).toHaveCount(0);
     const response = await member.request.post(detailPath, {
       data: deletion!.body,
@@ -123,7 +125,9 @@ test("a member cannot delete a lead even when submitting an owner's deletion for
     expect(await database.auditLog.count({ where: { targetId: lead.id } })).toBe(0);
     await page.unroute(`**${detailPath}`);
     await page.goto(detailPath);
-    await page.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
+    await page.getByText("Archive or delete", { exact: true }).click();
+
     await page.getByPlaceholder("DELETE", { exact: true }).fill("DELETE");
     await page.getByRole("button", { name: "Delete Permanently", exact: true }).click();
     await expect(page).toHaveURL(/leadDeleted=1/);
@@ -144,7 +148,7 @@ test("another workspace's lead cannot be read, updated or given a note", async (
   const lead = scenario.leads[0];
   const detailPath = `/w/${scenario.workspace.slug}/leads/${lead.id}`;
   await page.goto(detailPath);
-  await page.getByRole("button", { name: "⚙️ Workflow & Settings", exact: true }).click();
+
   const workflowForm = page.getByRole("button", { name: "Save workflow", exact: true }).locator("xpath=ancestor::form");
   await workflowForm.locator('input[name="leadId"]').evaluate((input, id) => { (input as HTMLInputElement).value = id; }, scenario.privateLead.id);
   await page.getByRole("combobox", { name: "Stage", exact: true }).selectOption("Won");
@@ -153,7 +157,7 @@ test("another workspace's lead cannot be read, updated or given a note", async (
   expect((await database.lead.findUniqueOrThrow({ where: { id: scenario.privateLead.id } })).stage).toBe("NEW");
   expect(await database.auditLog.count({ where: { targetId: scenario.privateLead.id } })).toBe(0);
   await page.goto(detailPath);
-  await page.getByRole("button", { name: "📝 Add Note", exact: true }).click();
+
   const noteForm = page.getByRole("button", { name: "Save note", exact: true }).locator("xpath=ancestor::form");
   await noteForm.locator('input[name="leadId"]').evaluate((input, id) => { (input as HTMLInputElement).value = id; }, scenario.privateLead.id);
   await page.getByLabel("Add internal note", { exact: true }).fill("This cross-workspace write must fail.");
@@ -161,4 +165,73 @@ test("another workspace's lead cannot be read, updated or given a note", async (
   await expect(page.getByText("This page could not be found.", { exact: true })).toBeVisible();
   expect(await database.note.count({ where: { leadId: scenario.privateLead.id } })).toBe(0);
   expect(await database.auditLog.count({ where: { targetId: scenario.privateLead.id } })).toBe(0);
+});
+
+test("workspace home opens the board, filters retain the layout, and mobile follow-up stays usable", async ({
+  page,
+  scenario,
+  database,
+}) => {
+  await login(page, scenario.owner.email);
+  await page.goto(`/w/${scenario.workspace.slug}`);
+  await expect(page).toHaveURL(/\/leads\?layout=kanban/);
+  await expect(
+    page.getByRole("heading", { name: "Pipeline", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Lead Name", { exact: true })).not.toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "AI Scanner", exact: true }),
+  ).not.toBeVisible();
+  await page.getByLabel("Search pipeline", { exact: true }).fill("Proof NEW");
+  await page.getByRole("button", { name: "Apply", exact: true }).click();
+  await expect(page).toHaveURL(/layout=kanban/);
+  await expect(page.getByRole("link", { name: "List", exact: true })).toHaveAttribute("href", /q=Proof\+NEW/);
+  await expect(
+    page.getByRole("link", { name: "Proof NEW opportunity", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "List", exact: true }).click();
+  // Next can update the URL before the server-rendered view and its links arrive.
+  // Wait for the list contact link and updated filter target before another navigation.
+  await expect(page.getByRole("link", { name: "Proof NEW", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "High priority", exact: true })).toHaveAttribute("href", /layout=list/);
+  await page.getByRole("link", { name: "High priority", exact: true }).click();
+  await expect(page).toHaveURL(/layout=list/);
+  await expect(page.getByLabel("Search pipeline", { exact: true })).toHaveValue(
+    "Proof NEW",
+  );
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("link", { name: "Proof NEW", exact: true }).click();
+  await expect(
+    page.getByRole("combobox", { name: "Stage", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Add internal note", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page
+    .getByText("Edit next action, summary & tags", { exact: true })
+    .click();
+  const nextAction = `Send the agreed scope ${scenario.key}`;
+  await page.getByRole("textbox", { name: "Next action", exact: true }).fill(nextAction);
+  await page
+    .getByRole("button", { name: "Save next action & context", exact: true })
+    .click();
+  await expect(page).toHaveURL(/intelligenceUpdated=1/);
+  const lead = scenario.leads.find((item) => item.stage === "NEW")!;
+  expect(
+    (await database.lead.findUniqueOrThrow({ where: { id: lead.id } }))
+      .nextAction,
+  ).toBe(nextAction);
+  await page.goto(`/w/${scenario.workspace.slug}/leads?layout=kanban`);
+  await expect(page.getByText(nextAction, { exact: true })).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
 });

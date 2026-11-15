@@ -24,24 +24,16 @@ export function CreateLeadForm({ workspaceSlug, mode }: CreateLeadFormProps) {
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between border-b border-slate-100 pb-4">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-teal-800">
-            Intake Form
-          </p>
-          <h3 className="mt-1 text-xl font-bold text-slate-900">
-            Create & Capture New Lead
-          </h3>
-          <p className="mt-1 max-w-2xl text-sm font-medium text-slate-600">
-            Add a new lead directly into this workspace with automatic tenant scoping and AI tagging.
-          </p>
-        </div>
-        <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold text-teal-900">
-          {mode === "database" ? "Database Persistence" : "Demo Mode"}
-        </span>
-      </div>
+      <h2 className="text-base font-semibold">New lead</h2>
+      <p className="mt-1 text-xs text-slate-500">
+        Start with the contact and what they need.
+        {mode === "demo" ? " Preview only; this will not save." : ""}
+      </p>
 
-      <form action={createLeadAction} className="mt-6 grid gap-4 lg:grid-cols-2">
+      <form
+        action={createLeadAction}
+        className="mt-6 grid gap-4 lg:grid-cols-2"
+      >
         <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
 
         <label className="grid gap-1.5 text-sm text-slate-900">

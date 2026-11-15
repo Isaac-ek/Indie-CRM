@@ -35,7 +35,9 @@ export function LeadIntelligenceForm({
   tagsValue,
   tagSuggestions,
 }: LeadIntelligenceFormProps) {
-  const [selectedTags, setSelectedTags] = useState<string[]>(parseInitialTags(tagsValue));
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    parseInitialTags(tagsValue),
+  );
   const [customTag, setCustomTag] = useState("");
 
   function addTag(tag: string) {
@@ -70,17 +72,17 @@ export function LeadIntelligenceForm({
   }
 
   return (
-    <form
-      action={updateLeadIntelligenceAction}
-      className="rounded-[1.5rem] border border-white/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.94),rgba(240,253,250,0.92))] p-4 shadow-[0_18px_55px_rgba(148,163,184,0.14)]"
-    >
+    <form action={updateLeadIntelligenceAction} className="grid min-w-0 gap-1">
       <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
       <input type="hidden" name="leadId" value={leadId} />
       <input type="hidden" name="tags" value={selectedTags.join(", ")} />
 
-      <p className="text-sm font-medium text-slate-950">Lead intelligence</p>
+      <p className="text-sm font-medium text-slate-950">
+        Next action & context
+      </p>
       <p className="mt-2 text-sm leading-6 text-slate-600">
-        Adjust the next step and tags manually so the CRM reflects your actual sales judgment.
+        Adjust the next step and tags manually so the CRM reflects your actual
+        sales judgment.
       </p>
 
       <div className="mt-4 grid gap-4">
@@ -89,10 +91,10 @@ export function LeadIntelligenceForm({
           <textarea
             name="summary"
             required
-            rows={4}
+            rows={3}
             defaultValue={summary}
-            className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-teal-500 focus:bg-teal-50/40"
-            placeholder="Concise AI summary of what this lead needs, what matters, and what changed..."
+            className="crm-input"
+            placeholder="Concise summary of what this lead needs, what matters, and what changed..."
           />
         </label>
 
@@ -101,9 +103,9 @@ export function LeadIntelligenceForm({
           <textarea
             name="nextAction"
             required
-            rows={4}
+            rows={3}
             defaultValue={nextAction}
-            className="rounded-[1.2rem] border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-teal-500 focus:bg-teal-50/40"
+            className="crm-input"
             placeholder="Send proposal, book discovery call, clarify scope, or close the loop..."
           />
         </label>
@@ -124,7 +126,8 @@ export function LeadIntelligenceForm({
               ))
             ) : (
               <span className="text-sm text-slate-500">
-                No tags selected yet. Add one from suggestions or create your own.
+                No tags selected yet. Add one from suggestions or create your
+                own.
               </span>
             )}
           </div>
@@ -147,7 +150,8 @@ export function LeadIntelligenceForm({
                       : "border border-slate-300 bg-white text-slate-700 hover:border-teal-400 hover:bg-teal-50 hover:text-teal-900"
                   }`}
                 >
-                  {active ? "Added: " : ""}{tag}
+                  {active ? "Added: " : ""}
+                  {tag}
                 </button>
               );
             })}
@@ -177,12 +181,14 @@ export function LeadIntelligenceForm({
 
       <div className="mt-4 flex items-center justify-between gap-3">
         <span className="text-xs text-slate-500">
-          {mode === "database" ? "Saves manual next-step guidance and tag edits" : "Demo mode redirect only"}
+          {mode === "database"
+            ? "Saves manual next-step guidance and tag edits"
+            : "Demo mode redirect only"}
         </span>
         <FormSubmitButton
-          idleLabel="Save intelligence"
+          idleLabel="Save next action & context"
           pendingLabel="Saving intelligence..."
-          className="rounded-full bg-[linear-gradient(135deg,#14b8a6,#0f766e)] px-4 py-2 text-sm font-semibold !text-white shadow-[0_12px_30px_rgba(20,184,166,0.28)] transition hover:scale-[1.01] hover:shadow-[0_18px_40px_rgba(20,184,166,0.34)] disabled:cursor-not-allowed disabled:opacity-70"
+          className="crm-button"
         />
       </div>
     </form>

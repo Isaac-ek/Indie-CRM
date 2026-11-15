@@ -1,22 +1,7 @@
 import Link from "next/link";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { logoutAction } from "@/lib/auth-actions";
-import { WorkspaceContext } from "@/lib/workspaces";
-
-type NavItem = {
-  href: string;
-  label: string;
-  description: string;
-};
-
-const navItems: NavItem[] = [
-  { href: "", label: "Dashboard", description: "Pipeline, follow-ups, and AI activity" },
-  { href: "/leads", label: "Leads", description: "Inbox and relationship history" },
-  { href: "/scanner", label: "AI Scanner", description: "Business cards, whiteboards & OCR pipeline" },
-  { href: "/analytics", label: "Analytics", description: "Pipeline conversion & team performance" },
-  { href: "/search", label: "Search", description: "Semantic memory across conversations" },
-  { href: "/settings", label: "Settings", description: "Workspace, prompts, and integrations" },
-];
+import type { WorkspaceContext } from "@/lib/workspaces";
 
 type AppShellProps = {
   currentPath: string;
@@ -30,159 +15,178 @@ type AppShellProps = {
 export function AppShell({
   currentPath,
   workspace,
-  eyebrow,
   title,
   description,
   children,
 }: AppShellProps) {
+  const primary = [
+    { href: "/leads", label: "Pipeline", icon: "▥" },
+    { href: "/search", label: "Search", icon: "⌕" },
+  ];
+  const secondary = [
+    { href: "/analytics", label: "Analytics" },
+    { href: "/scanner", label: "AI Scanner" },
+    { href: "/settings", label: "Settings & integrations" },
+  ];
   return (
-    <div className="min-h-screen overflow-x-clip text-slate-100">
-      <div className="mx-auto flex min-h-screen max-w-[1640px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:px-6 xl:flex-row">
-        <aside className="w-full overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,20,37,0.94)_0%,rgba(9,22,40,0.86)_100%)] px-4 py-5 text-slate-100 shadow-[0_30px_100px_rgba(2,6,23,0.55)] backdrop-blur-xl lg:px-5 lg:py-6 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:w-80 xl:flex-none xl:overflow-y-auto">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between xl:block">
-            <div>
-              <p className="text-xs uppercase tracking-[0.32em] text-teal-300">
-                Indie CRM
-              </p>
-              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                Lead workspace
-              </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 xl:max-w-xs">
-                A multi-tenant CRM for solo operators who need clean lead workflows,
-                searchable client memory, and practical AI help.
-              </p>
-            </div>
-            <div className="w-fit shrink-0 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-xs font-medium text-teal-100 shadow-[0_0_30px_rgba(45,212,191,0.14)]">
-              {workspace.publicDemo ? "Public demo" : "MVP Build"}
-            </div>
-          </div>
-
-          <form action={logoutAction} className="mt-5">
-            <button
-              type="submit"
-              className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-sm text-slate-100 transition hover:border-white/20 hover:bg-white/12"
+    <div className="crm-app min-h-screen bg-[#f7f9f8] text-slate-900 lg:grid lg:grid-cols-[208px_minmax(0,1fr)]">
+      <a
+        href="#workspace-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:p-3"
+      >
+        Skip to content
+      </a>
+      <aside className="border-b border-slate-200 bg-white p-4 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:border-r lg:border-b-0 lg:p-5">
+        <div className="flex items-center justify-between gap-3 lg:block">
+          <Link
+            href={`/w/${workspace.slug}/leads`}
+            className="inline-flex items-center gap-2.5 text-lg font-bold tracking-tight"
+          >
+            <span
+              aria-hidden="true"
+              className="flex size-8 items-center justify-center rounded-lg bg-teal-800 text-sm text-white"
             >
-              Sign out
-            </button>
-          </form>
-
-          <div className="mt-5 rounded-[1.6rem] border border-white/10 bg-white/[0.04] p-4">
-            <p className="text-xs uppercase tracking-[0.24em] text-teal-200">
-              Workspaces
-            </p>
-            <div className="mt-4 grid gap-2">
-              {workspace.availableWorkspaces.map((item) => {
-                const active = item.slug === workspace.slug;
-
-                return (
-                  <Link
-                    key={item.slug}
-                    href={`/w/${item.slug}`}
-                    className={`rounded-[1.1rem] border px-3 py-3 transition ${
-                      active
-                        ? "border-teal-300/50 bg-[linear-gradient(135deg,rgba(20,184,166,0.24),rgba(56,189,248,0.14))] text-white"
-                        : "border-white/10 bg-white/[0.04] text-slate-200 hover:border-teal-300/25 hover:bg-white/[0.08]"
-                    }`}
-                  >
-                    <div className="text-sm font-semibold">{item.name}</div>
-                    <div className="mt-1 text-xs leading-5 text-slate-300">
-                      {item.membershipRole}
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          <nav className="mt-6 grid gap-3 xl:mt-8">
-            {navItems.filter((item) => !workspace.publicDemo || ["/leads", "/search"].includes(item.href)).map((item) => {
-              const active = currentPath === item.href;
-              const href = `/w/${workspace.slug}${item.href}`;
-
-              return (
+              i.
+            </span>
+            indie<span className="-ml-2 text-slate-400">crm</span>
+          </Link>
+          <details className="relative lg:mt-8">
+            <summary className="cursor-pointer rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold lg:text-sm">
+              {workspace.name}
+            </summary>
+            <div className="absolute right-0 z-30 mt-2 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-lg lg:left-0">
+              {workspace.availableWorkspaces.map((item) => (
                 <Link
-                  key={item.href}
-                  href={href}
-                  className={`rounded-[1.4rem] border px-4 py-4 transition ${
-                    active
-                      ? "border-teal-300/50 bg-[linear-gradient(135deg,rgba(20,184,166,0.24),rgba(56,189,248,0.14))] text-white shadow-[0_12px_40px_rgba(20,184,166,0.18)]"
-                      : "border-white/10 bg-white/[0.04] text-slate-200 hover:border-teal-300/25 hover:bg-white/[0.08]"
-                  }`}
+                  key={item.slug}
+                  href={`/w/${item.slug}/leads`}
+                  aria-current={
+                    item.slug === workspace.slug ? "page" : undefined
+                  }
+                  className="block rounded-md px-3 py-2 text-sm hover:bg-slate-50"
                 >
-                  <div className="text-sm font-semibold">{item.label}</div>
-                  <div className="mt-1 text-xs leading-5 text-slate-300">
-                    {item.description}
-                  </div>
+                  {item.name}
+                  <span className="block text-xs text-slate-500">
+                    {item.membershipRole}
+                  </span>
                 </Link>
-              );
-            })}
-          </nav>
-
-          {!workspace.publicDemo && <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-4 xl:mt-8">
-            <p className="text-xs uppercase tracking-[0.28em] text-amber-200">
-              Build Priorities
-            </p>
-            <ul className="mt-4 space-y-3 text-sm text-slate-200">
-              <li>Tenant-aware auth and workspace membership</li>
-              <li>Lead inbox with conversations and notes</li>
-              <li>AI tagging, summaries, and suggested replies</li>
-              <li>Semantic search across prior conversations</li>
-            </ul>
-          </div>}
-        </aside>
-
-        <main className="min-w-0 flex-1">
-          <section className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(248,250,252,0.92),rgba(237,245,255,0.88))] p-4 text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-xl sm:p-5 lg:p-6">
-            <div className="flex flex-col gap-6 border-b border-slate-200/70 pb-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.32em] text-teal-700">
-                  {eyebrow}
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl xl:text-5xl">
-                  {title}
-                </h2>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-                  {description}
-                </p>
-              </div>
-              <div className="grid min-w-0 gap-3 text-sm text-slate-700 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-[0_8px_30px_rgba(148,163,184,0.12)]">
-                  <span className="block text-xs uppercase tracking-[0.22em] text-slate-500">
-                    Workspace
-                  </span>
-                  <span className="mt-2 block font-medium">{workspace.name}</span>
-                </div>
-                <div className="rounded-2xl border border-white/60 bg-white/70 px-4 py-3 shadow-[0_8px_30px_rgba(148,163,184,0.12)]">
-                  <span className="block text-xs uppercase tracking-[0.22em] text-slate-500">
-                    Member
-                  </span>
-                  <span className="mt-2 block font-medium">
-                    {workspace.currentUser.name}
-                  </span>
-                </div>
-                <div className="rounded-2xl border border-white/60 bg-[linear-gradient(135deg,rgba(20,184,166,0.09),rgba(255,255,255,0.72))] px-4 py-3 shadow-[0_8px_30px_rgba(148,163,184,0.12)] sm:col-span-2">
-                  <span className="block text-xs uppercase tracking-[0.22em] text-slate-500">
-                    Access
-                  </span>
-                  <span className="mt-2 block font-medium">
-                    {workspace.membershipRole} •{" "}
-                    {workspace.mode === "database" ? "Database connected" : "Demo mode"}
-                  </span>
-                </div>
-              </div>
+              ))}
+              <p className="border-t border-slate-100 px-3 pt-3 text-xs text-slate-500">
+                {workspace.currentUser.name}
+              </p>
+              <form action={logoutAction}>
+                <button className="mt-1 w-full rounded-md px-3 py-2 text-left text-sm hover:bg-slate-50">
+                  Sign out
+                </button>
+              </form>
             </div>
-
-            {workspace.publicDemo && (
-              <aside aria-label="Demo guide" className="mt-6 rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm leading-6 text-teal-950">
-                <p className="font-semibold">Your private sample pipeline · one-hour demo</p>
-                <p>Move Maya’s lead to Qualified, set a follow-up, then add a note and find it with Search. Changes save; refresh another tab to see them.</p>
-                <p className="mt-2 text-teal-800">Fictional data only. AI uses local sample logic. Uploads, integrations, and team administration are unavailable.</p>
-              </aside>
+          </details>
+        </div>
+        <nav
+          aria-label="Main navigation"
+          className="mt-4 flex gap-1 lg:mt-7 lg:grid"
+        >
+          {primary.map((item) => (
+            <Link
+              key={item.href}
+              href={`/w/${workspace.slug}${item.href}`}
+              aria-current={currentPath === item.href ? "page" : undefined}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${currentPath === item.href ? "bg-teal-50 text-teal-900" : "text-slate-600 hover:bg-slate-50"}`}
+            >
+              <span aria-hidden="true" className="text-lg leading-none">
+                {item.icon}
+              </span>
+              {item.label}
+            </Link>
+          ))}
+          {!workspace.publicDemo && (
+            <details
+              open={secondary.some((item) => item.href === currentPath)}
+              className="relative lg:mt-5"
+            >
+              <summary className="cursor-pointer rounded-lg px-3 py-2.5 text-sm text-slate-500 hover:bg-slate-50">
+                More tools
+              </summary>
+              <nav
+                aria-label="Workspace tools"
+                className="absolute right-0 z-20 mt-1 grid w-52 gap-1 rounded-lg border border-slate-200 bg-white p-2 shadow-lg lg:static lg:w-auto lg:border-0 lg:p-0 lg:shadow-none"
+              >
+                {secondary.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={`/w/${workspace.slug}${item.href}`}
+                    aria-current={
+                      currentPath === item.href ? "page" : undefined
+                    }
+                    className="rounded-md px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            </details>
+          )}
+        </nav>
+        <div className="mt-auto hidden pt-8 text-xs leading-5 text-slate-500 lg:block">
+          <p className="font-medium text-slate-700">
+            {workspace.currentUser.name}
+          </p>
+          <p>
+            {workspace.membershipRole} •{" "}
+            {workspace.mode === "database" ? "Database connected" : "Demo mode"}
+          </p>
+        </div>
+      </aside>
+      <main
+        id="workspace-content"
+        className="min-w-0 px-4 py-6 sm:px-7 lg:px-8 lg:py-8"
+      >
+        <div className="mx-auto max-w-[1600px]">
+          <header className="mb-6">
+            <p className="mb-1 text-xs font-medium text-slate-500">
+              {workspace.name}
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+              {title}
+            </h1>
+            {description && (
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                {description}
+              </p>
             )}
-            <div className="min-w-0 pt-6">{children}</div>
-          </section>
-        </main>
-      </div>
+          </header>
+          {workspace.publicDemo && (
+            <aside
+              aria-label="Demo guide"
+              className="mb-6 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-xs text-teal-950"
+            >
+              <p>
+                <strong className="font-semibold">
+                  Private sample workspace
+                </strong>
+                <span className="mx-2 text-teal-400">/</span>One-hour demo ·
+                changes save
+              </p>
+              <details className="basis-full sm:basis-auto">
+                <summary className="cursor-pointer font-medium underline underline-offset-4">
+                  How to try it
+                </summary>
+                <div className="mt-3 max-w-xl space-y-2 leading-5">
+                  <p>
+                    Move Maya’s lead to Qualified, set a follow-up, add a note,
+                    then find it with Search. Refresh another tab to see saved
+                    changes.
+                  </p>
+                  <p>
+                    Fictional data only. AI uses local sample logic. Uploads,
+                    integrations, and team administration are unavailable.
+                  </p>
+                </div>
+              </details>
+            </aside>
+          )}
+          {children}
+        </div>
+      </main>
     </div>
   );
 }
