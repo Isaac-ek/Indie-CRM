@@ -185,10 +185,15 @@ test("workspace home opens the board, filters retain the layout, and mobile foll
   await page.getByLabel("Search pipeline", { exact: true }).fill("Proof NEW");
   await page.getByRole("button", { name: "Apply", exact: true }).click();
   await expect(page).toHaveURL(/layout=kanban/);
+  await expect(page.getByRole("link", { name: "List", exact: true })).toHaveAttribute("href", /q=Proof\+NEW/);
   await expect(
     page.getByRole("link", { name: "Proof NEW opportunity", exact: true }),
   ).toBeVisible();
   await page.getByRole("link", { name: "List", exact: true }).click();
+  // Next can update the URL before the server-rendered view and its links arrive.
+  // Wait for the list contact link and updated filter target before another navigation.
+  await expect(page.getByRole("link", { name: "Proof NEW", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "High priority", exact: true })).toHaveAttribute("href", /layout=list/);
   await page.getByRole("link", { name: "High priority", exact: true }).click();
   await expect(page).toHaveURL(/layout=list/);
   await expect(page.getByLabel("Search pipeline", { exact: true })).toHaveValue(
