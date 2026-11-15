@@ -9,6 +9,11 @@ export default async function IndexPage() {
     redirect("/login");
   }
 
+  if (session.user.demoSlug) {
+    if ((session.user.demoExpiresAt ?? 0) <= Date.now()) redirect("/demo?expired=1");
+    redirect(`/w/${session.user.demoSlug}/leads?layout=kanban`);
+  }
+
   if (!process.env.DATABASE_URL) {
     redirect("/w/northstar-studio");
   }

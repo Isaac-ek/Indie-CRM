@@ -10,6 +10,7 @@
  */
 export type * from './models/Tenant'
 export type * from './models/User'
+export type * from './models/PublicDemo'
 export type * from './models/Membership'
 export type * from './models/WorkspaceInvite'
 export type * from './models/Contact'

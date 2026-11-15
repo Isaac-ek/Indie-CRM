@@ -105,6 +105,7 @@ model Tenant {
   operationalEvents OperationalEvent[]
   workspaceInvites WorkspaceInvite[]
   mailboxConnections MailboxConnection[]
+  publicDemo       PublicDemo?
 }
 
 model User {
@@ -122,6 +123,22 @@ model User {
   aiGenerations AIGeneration[] @relation("AIGenerationRequestedBy")
   sentWorkspaceInvites WorkspaceInvite[] @relation("WorkspaceInviteSentBy")
   auditLogs      AuditLog[]
+  publicDemo    PublicDemo?
+}
+
+// Explicit ownership keeps temporary-data cleanup separate from customer tenants.
+model PublicDemo {
+  id         String   @id @default(cuid())
+  tenantId   String   @unique
+  userId     String   @unique
+  clientHash String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([clientHash, createdAt])
 }
 
 model Membership {

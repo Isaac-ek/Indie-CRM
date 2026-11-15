@@ -2,7 +2,7 @@ name: CRM workflow proof
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, codex/crm-workflow-proof]
   push:
     branches: [main]
   workflow_dispatch:

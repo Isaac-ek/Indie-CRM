@@ -32,8 +32,8 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
       currentPath="/search"
       workspace={workspace}
       eyebrow="Conversation Memory"
-      title="Semantic Search & Grounded Context"
-      description="Hybrid keyword and vector semantic search across past conversations, lead notes, and AI outputs."
+      title={workspace.publicDemo ? "Find a lead or note" : "Semantic Search & Grounded Context"}
+      description={workspace.publicDemo ? "Search the sample leads and notes saved in your temporary workspace. This demo uses keyword matching and local sample logic." : "Hybrid keyword and vector semantic search across past conversations, lead notes, and AI outputs."}
     >
       <div className="flex flex-col gap-6 text-slate-900">
         {/* Section 1: Search Header Hero Card */}
@@ -44,10 +44,10 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
                 Workspace Memory
               </p>
               <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Semantic Client Memory
+                {workspace.publicDemo ? "Search your sample pipeline" : "Semantic Client Memory"}
               </h1>
               <p className="mt-2 max-w-3xl text-sm font-medium text-slate-300 leading-relaxed">
-                Recalls past lead requirements, prior objections, budget signals, and conversation history using stored vector embeddings.
+                {workspace.publicDemo ? "Try a client name, a project detail, or a phrase from a note you just saved." : "Recalls past lead requirements, prior objections, budget signals, and conversation history using stored vector embeddings."}
               </p>
             </div>
 
@@ -98,7 +98,7 @@ export default async function SearchPage({ params, searchParams }: PageProps) {
         {hasQuery && search.answer && (
           <section className="rounded-2xl border border-teal-200 bg-teal-50/80 p-6 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-wider text-teal-900">
-              🤖 Grounded AI Workspace Answer
+              {workspace.publicDemo ? "Sample evidence summary · local logic" : "🤖 Grounded AI Workspace Answer"}
             </p>
             <h3 className="mt-1 text-xl font-bold text-slate-900">
               Synthesized Workspace Evidence

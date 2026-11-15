@@ -55,6 +55,7 @@ export default async function LeadDetailPage({ params, searchParams }: PageProps
       <LeadDetailLayout
         workspaceSlug={workspace.slug}
         workspaceMode={workspace.mode}
+        publicDemo={!!workspace.publicDemo}
         canEditLeadRecords={canEditLeadRecords}
         canDeleteLeadRecords={canDeleteLeads(workspace.membershipRole)}
         lead={lead}

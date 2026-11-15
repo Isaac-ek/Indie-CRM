@@ -45,7 +45,7 @@ export function AppShell({
                 Indie CRM
               </p>
               <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                AI Tagging Workspace
+                Lead workspace
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 xl:max-w-xs">
                 A multi-tenant CRM for solo operators who need clean lead workflows,
@@ -53,7 +53,7 @@ export function AppShell({
               </p>
             </div>
             <div className="w-fit shrink-0 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-xs font-medium text-teal-100 shadow-[0_0_30px_rgba(45,212,191,0.14)]">
-              MVP Build
+              {workspace.publicDemo ? "Public demo" : "MVP Build"}
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export function AppShell({
           </div>
 
           <nav className="mt-6 grid gap-3 xl:mt-8">
-            {navItems.map((item) => {
+            {navItems.filter((item) => !workspace.publicDemo || ["/leads", "/search"].includes(item.href)).map((item) => {
               const active = currentPath === item.href;
               const href = `/w/${workspace.slug}${item.href}`;
 
@@ -118,7 +118,7 @@ export function AppShell({
             })}
           </nav>
 
-          <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-4 xl:mt-8">
+          {!workspace.publicDemo && <div className="mt-6 rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-4 xl:mt-8">
             <p className="text-xs uppercase tracking-[0.28em] text-amber-200">
               Build Priorities
             </p>
@@ -128,7 +128,7 @@ export function AppShell({
               <li>AI tagging, summaries, and suggested replies</li>
               <li>Semantic search across prior conversations</li>
             </ul>
-          </div>
+          </div>}
         </aside>
 
         <main className="min-w-0 flex-1">
@@ -172,6 +172,13 @@ export function AppShell({
               </div>
             </div>
 
+            {workspace.publicDemo && (
+              <aside aria-label="Demo guide" className="mt-6 rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm leading-6 text-teal-950">
+                <p className="font-semibold">Your private sample pipeline · one-hour demo</p>
+                <p>Move Maya’s lead to Qualified, set a follow-up, then add a note and find it with Search. Changes save; refresh another tab to see them.</p>
+                <p className="mt-2 text-teal-800">Fictional data only. AI uses local sample logic. Uploads, integrations, and team administration are unavailable.</p>
+              </aside>
+            )}
             <div className="min-w-0 pt-6">{children}</div>
           </section>
         </main>

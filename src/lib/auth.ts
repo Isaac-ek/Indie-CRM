@@ -8,6 +8,7 @@ export type CurrentUserContext = {
   email: string;
   name: string;
   mode: "database" | "demo";
+  publicDemo?: { slug: string; expiresAt: number };
 };
 
 const demoUser = {
@@ -22,6 +23,17 @@ export async function getCurrentUserContext(): Promise<CurrentUserContext> {
 
   if (!session?.user?.email) {
     redirect("/login");
+  }
+
+  // Guest access fails closed; never fall back to the static OWNER preview.
+  if (session.user.demoSlug) {
+    if (process.env.PUBLIC_DEMO_ENABLED !== "true" || !process.env.DATABASE_URL || (session.user.demoExpiresAt ?? 0) <= Date.now()) redirect("/demo?expired=1");
+    const demo = await getPrismaClient().publicDemo.findUnique({
+      where: { userId: session.user.id ?? "" },
+      include: { tenant: true, user: true },
+    });
+    if (!demo || demo.expiresAt.getTime() <= Date.now() || demo.tenant.slug !== session.user.demoSlug) redirect("/demo?expired=1");
+    return { id: demo.user.id, email: demo.user.email, name: demo.user.name ?? "Demo visitor", mode: "database", publicDemo: { slug: demo.tenant.slug, expiresAt: demo.expiresAt.getTime() } };
   }
 
   if (!process.env.DATABASE_URL) {

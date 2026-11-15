@@ -14,7 +14,7 @@ npx playwright install chromium
 npm run test:workflow
 ```
 
-If Chrome is already installed, set `E2E_BROWSER_CHANNEL=chrome` instead of installing Chromium. `E2E_PORT` defaults to 3180. The suite starts its own local server and refuses to reuse a server that could have different database settings. The command enables the `tsx` loader for Prisma's generated TypeScript client.
+If Chrome is already installed, set `E2E_BROWSER_CHANNEL=chrome` instead of installing Chromium. `E2E_PORT` defaults to 3180. The suite builds and starts its own standalone production server at `http://localhost:3180` and refuses to reuse a server that could have different database settings. Use localhost consistently because Next.js normalizes loopback redirect hosts. The test runner enables the `tsx` loader for Prisma's generated TypeScript client; the application server uses Next.js's own loader.
 
 Each scenario creates its own owner, member, separate workspace owner, workspaces and sample leads. Cleanup removes only those records. The owner and member sign in through the real login form in separate browser contexts. AI API credentials are blank, so AI generation and embedding fallbacks are exercised; this is not a test of OpenAI or pgvector service performance.
 
@@ -34,8 +34,10 @@ Saving a lead writes to PostgreSQL and revalidates the affected Next.js routes. 
 
 `.github/workflows/workflow-proof.yml` runs the suite against its own PostgreSQL 16 service on pull requests and main. Failure screenshots and traces are kept as short-lived CI artifacts. The default `npm run test:e2e` command runs the same suite. The former page-presence checks have been replaced with these persisted-workflow assertions.
 
-This pass verifies the core persisted workflow and workspace boundaries. Public guest-workspace provisioning and a recorded product walkthrough are separate delivery steps; this suite does not expose production credentials or create a public demo login.
+Public demo scenarios additionally verify a complete saved workflow, isolation between visitors, database expiry blocking writes, safe cleanup on restart, blocked upload/export/webhook endpoints, and zero external AI HTTP attempts even with a configured provider key. See `public-demo.md` for lifecycle and deployment details. A recorded portfolio walkthrough remains a separate delivery step.
 
 ## Local verification result
 
 Verified on 2026-11-14 with local PostgreSQL 16 and headless Chrome: all five browser scenarios passed, all 75 unit tests passed, TypeScript and ESLint passed, and the Next.js production build completed. CI runs separately; local completion does not assert a remote CI result or a production deployment.
+
+On 2026-11-15, the expanded nine-scenario suite passed against the standalone production server after the runtime update described in `public-demo.md`. All 75 unit tests also passed. The additional scenarios exercise actual guest database writes rather than the static fallback preview.

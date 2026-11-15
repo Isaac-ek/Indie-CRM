@@ -52,6 +52,11 @@ export type Tenant = Prisma.TenantModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model PublicDemo
+ * 
+ */
+export type PublicDemo = Prisma.PublicDemoModel
+/**
  * Model Membership
  * 
  */
