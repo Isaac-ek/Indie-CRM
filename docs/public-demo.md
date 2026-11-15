@@ -26,7 +26,9 @@ The feature is off by default. Before enabling it on an intended deployment:
 2. Configure `DATABASE_URL`, a private `AUTH_SECRET`, and `PUBLIC_DEMO_ENABLED=true` for that environment.
 3. Open `/demo` in a fresh browser context and verify provisioning, saved changes, isolation, and expiry.
 
-This change does not modify production environment variables, apply a production migration, or enable the public production demo. Apply the schema migration before deploying this revision against an existing database, even if demo entry is disabled: tenant-aware AI safeguards read the lifecycle table. Preview environments should use their own database. Do not point local browser tests at a deployed database; they enforce a separate loopback-only `indie_crm_workflow_*` database.
+The public demo remains opt-in through environment configuration. Apply the schema migration before deploying this revision against an existing database, even if demo entry is disabled: tenant-aware AI safeguards read the lifecycle table. Preview environments should use their own database. Do not point local browser tests at a deployed database; they enforce a separate loopback-only `indie_crm_workflow_*` database.
+
+Vercel's configured build command runs `prisma migrate deploy` before compiling a production release when `DATABASE_URL` is configured. Migration failure stops the build, leaving the current deployment serving traffic. It does not reset or seed the database. Preview builds skip this deployment step; provision and migrate their separate databases independently. Production without a database retains the existing static preview mode. Enabling the public demo without both its database and authentication secret fails the production build.
 
 ## Verification
 
