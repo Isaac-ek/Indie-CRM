@@ -205,6 +205,7 @@ export type UserWhereInput = {
   aiGenerations?: Prisma.AIGenerationListRelationFilter
   sentWorkspaceInvites?: Prisma.WorkspaceInviteListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  publicDemo?: Prisma.XOR<Prisma.PublicDemoNullableScalarRelationFilter, Prisma.PublicDemoWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
@@ -222,6 +223,7 @@ export type UserOrderByWithRelationInput = {
   aiGenerations?: Prisma.AIGenerationOrderByRelationAggregateInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  publicDemo?: Prisma.PublicDemoOrderByWithRelationInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -242,6 +244,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   aiGenerations?: Prisma.AIGenerationListRelationFilter
   sentWorkspaceInvites?: Prisma.WorkspaceInviteListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
+  publicDemo?: Prisma.XOR<Prisma.PublicDemoNullableScalarRelationFilter, Prisma.PublicDemoWhereInput> | null
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -285,6 +288,7 @@ export type UserCreateInput = {
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -302,6 +306,7 @@ export type UserUncheckedCreateInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -319,6 +324,7 @@ export type UserUpdateInput = {
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -336,6 +342,7 @@ export type UserUncheckedUpdateInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -406,6 +413,20 @@ export type UserScalarRelationFilter = {
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserCreateNestedOneWithoutPublicDemoInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPublicDemoInput, Prisma.UserUncheckedCreateWithoutPublicDemoInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPublicDemoInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPublicDemoNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPublicDemoInput, Prisma.UserUncheckedCreateWithoutPublicDemoInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPublicDemoInput
+  upsert?: Prisma.UserUpsertWithoutPublicDemoInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPublicDemoInput, Prisma.UserUpdateWithoutPublicDemoInput>, Prisma.UserUncheckedUpdateWithoutPublicDemoInput>
 }
 
 export type UserCreateNestedOneWithoutMembershipsInput = {
@@ -518,6 +539,90 @@ export type UserUpdateOneWithoutAuditLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
 }
 
+export type UserCreateWithoutPublicDemoInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutUserInput
+  createdLeads?: Prisma.LeadCreateNestedManyWithoutCreatedByInput
+  notes?: Prisma.NoteCreateNestedManyWithoutAuthorInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
+  aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
+  sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+}
+
+export type UserUncheckedCreateWithoutPublicDemoInput = {
+  id?: string
+  email: string
+  name?: string | null
+  imageUrl?: string | null
+  passwordHash?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutUserInput
+  createdLeads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatedByInput
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutAuthorInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
+  aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
+  sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+}
+
+export type UserCreateOrConnectWithoutPublicDemoInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPublicDemoInput, Prisma.UserUncheckedCreateWithoutPublicDemoInput>
+}
+
+export type UserUpsertWithoutPublicDemoInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPublicDemoInput, Prisma.UserUncheckedUpdateWithoutPublicDemoInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPublicDemoInput, Prisma.UserUncheckedCreateWithoutPublicDemoInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPublicDemoInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPublicDemoInput, Prisma.UserUncheckedUpdateWithoutPublicDemoInput>
+}
+
+export type UserUpdateWithoutPublicDemoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutUserNestedInput
+  createdLeads?: Prisma.LeadUpdateManyWithoutCreatedByNestedInput
+  notes?: Prisma.NoteUpdateManyWithoutAuthorNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
+  aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
+  sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPublicDemoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutUserNestedInput
+  createdLeads?: Prisma.LeadUncheckedUpdateManyWithoutCreatedByNestedInput
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutAuthorNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
+  aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
+  sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+}
+
 export type UserCreateWithoutMembershipsInput = {
   id?: string
   email: string
@@ -532,6 +637,7 @@ export type UserCreateWithoutMembershipsInput = {
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -548,6 +654,7 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -580,6 +687,7 @@ export type UserUpdateWithoutMembershipsInput = {
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -596,6 +704,7 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSentWorkspaceInvitesInput = {
@@ -612,6 +721,7 @@ export type UserCreateWithoutSentWorkspaceInvitesInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSentWorkspaceInvitesInput = {
@@ -628,6 +738,7 @@ export type UserUncheckedCreateWithoutSentWorkspaceInvitesInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSentWorkspaceInvitesInput = {
@@ -660,6 +771,7 @@ export type UserUpdateWithoutSentWorkspaceInvitesInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSentWorkspaceInvitesInput = {
@@ -676,6 +788,7 @@ export type UserUncheckedUpdateWithoutSentWorkspaceInvitesInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedLeadsInput = {
@@ -692,6 +805,7 @@ export type UserCreateWithoutCreatedLeadsInput = {
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedLeadsInput = {
@@ -708,6 +822,7 @@ export type UserUncheckedCreateWithoutCreatedLeadsInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedLeadsInput = {
@@ -740,6 +855,7 @@ export type UserUpdateWithoutCreatedLeadsInput = {
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedLeadsInput = {
@@ -756,6 +872,7 @@ export type UserUncheckedUpdateWithoutCreatedLeadsInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSentMessagesInput = {
@@ -772,6 +889,7 @@ export type UserCreateWithoutSentMessagesInput = {
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSentMessagesInput = {
@@ -788,6 +906,7 @@ export type UserUncheckedCreateWithoutSentMessagesInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSentMessagesInput = {
@@ -820,6 +939,7 @@ export type UserUpdateWithoutSentMessagesInput = {
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSentMessagesInput = {
@@ -836,6 +956,7 @@ export type UserUncheckedUpdateWithoutSentMessagesInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotesInput = {
@@ -852,6 +973,7 @@ export type UserCreateWithoutNotesInput = {
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotesInput = {
@@ -868,6 +990,7 @@ export type UserUncheckedCreateWithoutNotesInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotesInput = {
@@ -900,6 +1023,7 @@ export type UserUpdateWithoutNotesInput = {
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotesInput = {
@@ -916,6 +1040,7 @@ export type UserUncheckedUpdateWithoutNotesInput = {
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAiGenerationsInput = {
@@ -932,6 +1057,7 @@ export type UserCreateWithoutAiGenerationsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAiGenerationsInput = {
@@ -948,6 +1074,7 @@ export type UserUncheckedCreateWithoutAiGenerationsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorUserInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAiGenerationsInput = {
@@ -980,6 +1107,7 @@ export type UserUpdateWithoutAiGenerationsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiGenerationsInput = {
@@ -996,6 +1124,7 @@ export type UserUncheckedUpdateWithoutAiGenerationsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorUserNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1012,6 +1141,7 @@ export type UserCreateWithoutAuditLogsInput = {
   sentMessages?: Prisma.MessageCreateNestedManyWithoutAuthorInput
   aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutInvitedByInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1028,6 +1158,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutAuthorInput
   aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutRequestedByInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutInvitedByInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1060,6 +1191,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   sentMessages?: Prisma.MessageUpdateManyWithoutAuthorNestedInput
   aiGenerations?: Prisma.AIGenerationUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutInvitedByNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1076,6 +1208,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutAuthorNestedInput
   aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutRequestedByNestedInput
   sentWorkspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutInvitedByNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutUserNestedInput
 }
 
 
@@ -1178,6 +1311,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   aiGenerations?: boolean | Prisma.User$aiGenerationsArgs<ExtArgs>
   sentWorkspaceInvites?: boolean | Prisma.User$sentWorkspaceInvitesArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  publicDemo?: boolean | Prisma.User$publicDemoArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1220,6 +1354,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   aiGenerations?: boolean | Prisma.User$aiGenerationsArgs<ExtArgs>
   sentWorkspaceInvites?: boolean | Prisma.User$sentWorkspaceInvitesArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  publicDemo?: boolean | Prisma.User$publicDemoArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1235,6 +1370,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     aiGenerations: Prisma.$AIGenerationPayload<ExtArgs>[]
     sentWorkspaceInvites: Prisma.$WorkspaceInvitePayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    publicDemo: Prisma.$PublicDemoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1645,6 +1781,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   aiGenerations<T extends Prisma.User$aiGenerationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiGenerationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIGenerationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sentWorkspaceInvites<T extends Prisma.User$sentWorkspaceInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sentWorkspaceInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  publicDemo<T extends Prisma.User$publicDemoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$publicDemoArgs<ExtArgs>>): Prisma.Prisma__PublicDemoClient<runtime.Types.Result.GetResult<Prisma.$PublicDemoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2239,6 +2376,25 @@ export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.publicDemo
+ */
+export type User$publicDemoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PublicDemo
+   */
+  select?: Prisma.PublicDemoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PublicDemo
+   */
+  omit?: Prisma.PublicDemoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PublicDemoInclude<ExtArgs> | null
+  where?: Prisma.PublicDemoWhereInput
 }
 
 /**

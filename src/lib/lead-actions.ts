@@ -129,6 +129,10 @@ export async function createLeadAction(formData: FormData) {
 
   const prisma = getPrismaClient();
 
+  if (workspace.publicDemo && await prisma.lead.count({ where: { tenantId: workspace.id } }) >= 20) {
+    redirectLeadError(workspaceSlug, null, "This sample workspace has reached its 20-lead limit.");
+  }
+
   const contact = await prisma.contact.upsert({
     where: {
       tenantId_email: {
@@ -238,6 +242,10 @@ export async function addLeadNoteAction(formData: FormData) {
     select: { id: true },
   });
   if (!lead) notFound();
+
+  if (workspace.publicDemo && await prisma.note.count({ where: { tenantId: workspace.id } }) >= 50) {
+    redirectLeadError(workspaceSlug, leadId, "This sample workspace has reached its 50-note limit.");
+  }
 
   const note = await prisma.note.create({
     data: {

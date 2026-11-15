@@ -19,7 +19,7 @@ export async function createVoiceNoteAction(formData: FormData) {
   const leadId = requiredTrimmedString(formData, "leadId", { maxLength: 64 });
   const workspace = await getWorkspaceContext(workspaceSlug);
 
-  if (!canContributeToLead(workspace.membershipRole)) {
+  if (workspace.publicDemo || !canContributeToLead(workspace.membershipRole)) {
     redirect(`/w/${workspaceSlug}/leads/${leadId}?permissionError=read_only`);
   }
 

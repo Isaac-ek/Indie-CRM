@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import authConfig from "@/auth.config";
 import { getPrismaClient } from "@/lib/prisma";
+import { createPublicDemo } from "@/lib/public-demo";
 
 const demoEmail = "owner@northstarstudio.test";
 const demoPassword = process.env.DEMO_USER_PASSWORD ?? "demo12345";
@@ -10,6 +11,12 @@ const demoPassword = process.env.DEMO_USER_PASSWORD ?? "demo12345";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
   providers: [
+    Credentials({
+      id: "public-demo",
+      name: "Sample pipeline",
+      credentials: {},
+      authorize: async (_credentials, request) => createPublicDemo(request.headers),
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "email" },
@@ -68,20 +75,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.id = user.id;
-      }
-
-      return token;
-    },
-    session: async ({ session, token }) => {
-      if (session.user && typeof token.id === "string") {
-        session.user.id = token.id;
-      }
-
-      return session;
-    },
-  },
 });

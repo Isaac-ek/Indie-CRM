@@ -205,6 +205,7 @@ export type TenantWhereInput = {
   operationalEvents?: Prisma.OperationalEventListRelationFilter
   workspaceInvites?: Prisma.WorkspaceInviteListRelationFilter
   mailboxConnections?: Prisma.MailboxConnectionListRelationFilter
+  publicDemo?: Prisma.XOR<Prisma.PublicDemoNullableScalarRelationFilter, Prisma.PublicDemoWhereInput> | null
 }
 
 export type TenantOrderByWithRelationInput = {
@@ -229,6 +230,7 @@ export type TenantOrderByWithRelationInput = {
   operationalEvents?: Prisma.OperationalEventOrderByRelationAggregateInput
   workspaceInvites?: Prisma.WorkspaceInviteOrderByRelationAggregateInput
   mailboxConnections?: Prisma.MailboxConnectionOrderByRelationAggregateInput
+  publicDemo?: Prisma.PublicDemoOrderByWithRelationInput
 }
 
 export type TenantWhereUniqueInput = Prisma.AtLeast<{
@@ -256,6 +258,7 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   operationalEvents?: Prisma.OperationalEventListRelationFilter
   workspaceInvites?: Prisma.WorkspaceInviteListRelationFilter
   mailboxConnections?: Prisma.MailboxConnectionListRelationFilter
+  publicDemo?: Prisma.XOR<Prisma.PublicDemoNullableScalarRelationFilter, Prisma.PublicDemoWhereInput> | null
 }, "id" | "slug">
 
 export type TenantOrderByWithAggregationInput = {
@@ -304,6 +307,7 @@ export type TenantCreateInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateInput = {
@@ -328,6 +332,7 @@ export type TenantUncheckedCreateInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUpdateInput = {
@@ -352,6 +357,7 @@ export type TenantUpdateInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateInput = {
@@ -376,6 +382,7 @@ export type TenantUncheckedUpdateInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateManyInput = {
@@ -447,6 +454,20 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type TenantCreateNestedOneWithoutPublicDemoInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutPublicDemoInput, Prisma.TenantUncheckedCreateWithoutPublicDemoInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutPublicDemoInput
+  connect?: Prisma.TenantWhereUniqueInput
+}
+
+export type TenantUpdateOneRequiredWithoutPublicDemoNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantCreateWithoutPublicDemoInput, Prisma.TenantUncheckedCreateWithoutPublicDemoInput>
+  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutPublicDemoInput
+  upsert?: Prisma.TenantUpsertWithoutPublicDemoInput
+  connect?: Prisma.TenantWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutPublicDemoInput, Prisma.TenantUpdateWithoutPublicDemoInput>, Prisma.TenantUncheckedUpdateWithoutPublicDemoInput>
 }
 
 export type TenantCreateNestedOneWithoutMembershipsInput = {
@@ -659,6 +680,118 @@ export type TenantUpdateOneRequiredWithoutOperationalEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutOperationalEventsInput, Prisma.TenantUpdateWithoutOperationalEventsInput>, Prisma.TenantUncheckedUpdateWithoutOperationalEventsInput>
 }
 
+export type TenantCreateWithoutPublicDemoInput = {
+  id?: string
+  slug: string
+  name: string
+  aiInstructions?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipCreateNestedManyWithoutTenantInput
+  contacts?: Prisma.ContactCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadCreateNestedManyWithoutTenantInput
+  conversations?: Prisma.ConversationCreateNestedManyWithoutTenantInput
+  messages?: Prisma.MessageCreateNestedManyWithoutTenantInput
+  notes?: Prisma.NoteCreateNestedManyWithoutTenantInput
+  tags?: Prisma.TagCreateNestedManyWithoutTenantInput
+  webhookEvents?: Prisma.WebhookEventCreateNestedManyWithoutTenantInput
+  aiGenerations?: Prisma.AIGenerationCreateNestedManyWithoutTenantInput
+  messageEmbeddings?: Prisma.MessageEmbeddingCreateNestedManyWithoutTenantInput
+  noteEmbeddings?: Prisma.NoteEmbeddingCreateNestedManyWithoutTenantInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput
+  operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
+  workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
+  mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+}
+
+export type TenantUncheckedCreateWithoutPublicDemoInput = {
+  id?: string
+  slug: string
+  name: string
+  aiInstructions?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  memberships?: Prisma.MembershipUncheckedCreateNestedManyWithoutTenantInput
+  contacts?: Prisma.ContactUncheckedCreateNestedManyWithoutTenantInput
+  leads?: Prisma.LeadUncheckedCreateNestedManyWithoutTenantInput
+  conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutTenantInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutTenantInput
+  notes?: Prisma.NoteUncheckedCreateNestedManyWithoutTenantInput
+  tags?: Prisma.TagUncheckedCreateNestedManyWithoutTenantInput
+  webhookEvents?: Prisma.WebhookEventUncheckedCreateNestedManyWithoutTenantInput
+  aiGenerations?: Prisma.AIGenerationUncheckedCreateNestedManyWithoutTenantInput
+  messageEmbeddings?: Prisma.MessageEmbeddingUncheckedCreateNestedManyWithoutTenantInput
+  noteEmbeddings?: Prisma.NoteEmbeddingUncheckedCreateNestedManyWithoutTenantInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput
+  operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
+  workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
+  mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+}
+
+export type TenantCreateOrConnectWithoutPublicDemoInput = {
+  where: Prisma.TenantWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantCreateWithoutPublicDemoInput, Prisma.TenantUncheckedCreateWithoutPublicDemoInput>
+}
+
+export type TenantUpsertWithoutPublicDemoInput = {
+  update: Prisma.XOR<Prisma.TenantUpdateWithoutPublicDemoInput, Prisma.TenantUncheckedUpdateWithoutPublicDemoInput>
+  create: Prisma.XOR<Prisma.TenantCreateWithoutPublicDemoInput, Prisma.TenantUncheckedCreateWithoutPublicDemoInput>
+  where?: Prisma.TenantWhereInput
+}
+
+export type TenantUpdateToOneWithWhereWithoutPublicDemoInput = {
+  where?: Prisma.TenantWhereInput
+  data: Prisma.XOR<Prisma.TenantUpdateWithoutPublicDemoInput, Prisma.TenantUncheckedUpdateWithoutPublicDemoInput>
+}
+
+export type TenantUpdateWithoutPublicDemoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  aiInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUpdateManyWithoutTenantNestedInput
+  contacts?: Prisma.ContactUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUpdateManyWithoutTenantNestedInput
+  conversations?: Prisma.ConversationUpdateManyWithoutTenantNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutTenantNestedInput
+  notes?: Prisma.NoteUpdateManyWithoutTenantNestedInput
+  tags?: Prisma.TagUpdateManyWithoutTenantNestedInput
+  webhookEvents?: Prisma.WebhookEventUpdateManyWithoutTenantNestedInput
+  aiGenerations?: Prisma.AIGenerationUpdateManyWithoutTenantNestedInput
+  messageEmbeddings?: Prisma.MessageEmbeddingUpdateManyWithoutTenantNestedInput
+  noteEmbeddings?: Prisma.NoteEmbeddingUpdateManyWithoutTenantNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput
+  operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
+  workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
+  mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+}
+
+export type TenantUncheckedUpdateWithoutPublicDemoInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  aiInstructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  memberships?: Prisma.MembershipUncheckedUpdateManyWithoutTenantNestedInput
+  contacts?: Prisma.ContactUncheckedUpdateManyWithoutTenantNestedInput
+  leads?: Prisma.LeadUncheckedUpdateManyWithoutTenantNestedInput
+  conversations?: Prisma.ConversationUncheckedUpdateManyWithoutTenantNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutTenantNestedInput
+  notes?: Prisma.NoteUncheckedUpdateManyWithoutTenantNestedInput
+  tags?: Prisma.TagUncheckedUpdateManyWithoutTenantNestedInput
+  webhookEvents?: Prisma.WebhookEventUncheckedUpdateManyWithoutTenantNestedInput
+  aiGenerations?: Prisma.AIGenerationUncheckedUpdateManyWithoutTenantNestedInput
+  messageEmbeddings?: Prisma.MessageEmbeddingUncheckedUpdateManyWithoutTenantNestedInput
+  noteEmbeddings?: Prisma.NoteEmbeddingUncheckedUpdateManyWithoutTenantNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput
+  operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
+  workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
+  mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+}
+
 export type TenantCreateWithoutMembershipsInput = {
   id?: string
   slug: string
@@ -680,6 +813,7 @@ export type TenantCreateWithoutMembershipsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutMembershipsInput = {
@@ -703,6 +837,7 @@ export type TenantUncheckedCreateWithoutMembershipsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutMembershipsInput = {
@@ -742,6 +877,7 @@ export type TenantUpdateWithoutMembershipsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutMembershipsInput = {
@@ -765,6 +901,7 @@ export type TenantUncheckedUpdateWithoutMembershipsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutWorkspaceInvitesInput = {
@@ -788,6 +925,7 @@ export type TenantCreateWithoutWorkspaceInvitesInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutWorkspaceInvitesInput = {
@@ -811,6 +949,7 @@ export type TenantUncheckedCreateWithoutWorkspaceInvitesInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutWorkspaceInvitesInput = {
@@ -850,6 +989,7 @@ export type TenantUpdateWithoutWorkspaceInvitesInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutWorkspaceInvitesInput = {
@@ -873,6 +1013,7 @@ export type TenantUncheckedUpdateWithoutWorkspaceInvitesInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutContactsInput = {
@@ -896,6 +1037,7 @@ export type TenantCreateWithoutContactsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutContactsInput = {
@@ -919,6 +1061,7 @@ export type TenantUncheckedCreateWithoutContactsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutContactsInput = {
@@ -958,6 +1101,7 @@ export type TenantUpdateWithoutContactsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutContactsInput = {
@@ -981,6 +1125,7 @@ export type TenantUncheckedUpdateWithoutContactsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutLeadsInput = {
@@ -1004,6 +1149,7 @@ export type TenantCreateWithoutLeadsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutLeadsInput = {
@@ -1027,6 +1173,7 @@ export type TenantUncheckedCreateWithoutLeadsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutLeadsInput = {
@@ -1066,6 +1213,7 @@ export type TenantUpdateWithoutLeadsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutLeadsInput = {
@@ -1089,6 +1237,7 @@ export type TenantUncheckedUpdateWithoutLeadsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutConversationsInput = {
@@ -1112,6 +1261,7 @@ export type TenantCreateWithoutConversationsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutConversationsInput = {
@@ -1135,6 +1285,7 @@ export type TenantUncheckedCreateWithoutConversationsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutConversationsInput = {
@@ -1174,6 +1325,7 @@ export type TenantUpdateWithoutConversationsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutConversationsInput = {
@@ -1197,6 +1349,7 @@ export type TenantUncheckedUpdateWithoutConversationsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutMessagesInput = {
@@ -1220,6 +1373,7 @@ export type TenantCreateWithoutMessagesInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutMessagesInput = {
@@ -1243,6 +1397,7 @@ export type TenantUncheckedCreateWithoutMessagesInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutMessagesInput = {
@@ -1282,6 +1437,7 @@ export type TenantUpdateWithoutMessagesInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutMessagesInput = {
@@ -1305,6 +1461,7 @@ export type TenantUncheckedUpdateWithoutMessagesInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutMailboxConnectionsInput = {
@@ -1328,6 +1485,7 @@ export type TenantCreateWithoutMailboxConnectionsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutMailboxConnectionsInput = {
@@ -1351,6 +1509,7 @@ export type TenantUncheckedCreateWithoutMailboxConnectionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutMailboxConnectionsInput = {
@@ -1390,6 +1549,7 @@ export type TenantUpdateWithoutMailboxConnectionsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutMailboxConnectionsInput = {
@@ -1413,6 +1573,7 @@ export type TenantUncheckedUpdateWithoutMailboxConnectionsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutNotesInput = {
@@ -1436,6 +1597,7 @@ export type TenantCreateWithoutNotesInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutNotesInput = {
@@ -1459,6 +1621,7 @@ export type TenantUncheckedCreateWithoutNotesInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutNotesInput = {
@@ -1498,6 +1661,7 @@ export type TenantUpdateWithoutNotesInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutNotesInput = {
@@ -1521,6 +1685,7 @@ export type TenantUncheckedUpdateWithoutNotesInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutTagsInput = {
@@ -1544,6 +1709,7 @@ export type TenantCreateWithoutTagsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutTagsInput = {
@@ -1567,6 +1733,7 @@ export type TenantUncheckedCreateWithoutTagsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutTagsInput = {
@@ -1606,6 +1773,7 @@ export type TenantUpdateWithoutTagsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutTagsInput = {
@@ -1629,6 +1797,7 @@ export type TenantUncheckedUpdateWithoutTagsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutWebhookEventsInput = {
@@ -1652,6 +1821,7 @@ export type TenantCreateWithoutWebhookEventsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutWebhookEventsInput = {
@@ -1675,6 +1845,7 @@ export type TenantUncheckedCreateWithoutWebhookEventsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutWebhookEventsInput = {
@@ -1714,6 +1885,7 @@ export type TenantUpdateWithoutWebhookEventsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutWebhookEventsInput = {
@@ -1737,6 +1909,7 @@ export type TenantUncheckedUpdateWithoutWebhookEventsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutAiGenerationsInput = {
@@ -1760,6 +1933,7 @@ export type TenantCreateWithoutAiGenerationsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutAiGenerationsInput = {
@@ -1783,6 +1957,7 @@ export type TenantUncheckedCreateWithoutAiGenerationsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutAiGenerationsInput = {
@@ -1822,6 +1997,7 @@ export type TenantUpdateWithoutAiGenerationsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutAiGenerationsInput = {
@@ -1845,6 +2021,7 @@ export type TenantUncheckedUpdateWithoutAiGenerationsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutMessageEmbeddingsInput = {
@@ -1868,6 +2045,7 @@ export type TenantCreateWithoutMessageEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutMessageEmbeddingsInput = {
@@ -1891,6 +2069,7 @@ export type TenantUncheckedCreateWithoutMessageEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutMessageEmbeddingsInput = {
@@ -1930,6 +2109,7 @@ export type TenantUpdateWithoutMessageEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutMessageEmbeddingsInput = {
@@ -1953,6 +2133,7 @@ export type TenantUncheckedUpdateWithoutMessageEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutNoteEmbeddingsInput = {
@@ -1976,6 +2157,7 @@ export type TenantCreateWithoutNoteEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutNoteEmbeddingsInput = {
@@ -1999,6 +2181,7 @@ export type TenantUncheckedCreateWithoutNoteEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutNoteEmbeddingsInput = {
@@ -2038,6 +2221,7 @@ export type TenantUpdateWithoutNoteEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutNoteEmbeddingsInput = {
@@ -2061,6 +2245,7 @@ export type TenantUncheckedUpdateWithoutNoteEmbeddingsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutAuditLogsInput = {
@@ -2084,6 +2269,7 @@ export type TenantCreateWithoutAuditLogsInput = {
   operationalEvents?: Prisma.OperationalEventCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutAuditLogsInput = {
@@ -2107,6 +2293,7 @@ export type TenantUncheckedCreateWithoutAuditLogsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutAuditLogsInput = {
@@ -2146,6 +2333,7 @@ export type TenantUpdateWithoutAuditLogsInput = {
   operationalEvents?: Prisma.OperationalEventUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutAuditLogsInput = {
@@ -2169,6 +2357,7 @@ export type TenantUncheckedUpdateWithoutAuditLogsInput = {
   operationalEvents?: Prisma.OperationalEventUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantCreateWithoutOperationalEventsInput = {
@@ -2192,6 +2381,7 @@ export type TenantCreateWithoutOperationalEventsInput = {
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoCreateNestedOneWithoutTenantInput
 }
 
 export type TenantUncheckedCreateWithoutOperationalEventsInput = {
@@ -2215,6 +2405,7 @@ export type TenantUncheckedCreateWithoutOperationalEventsInput = {
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutTenantInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedCreateNestedManyWithoutTenantInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedCreateNestedManyWithoutTenantInput
+  publicDemo?: Prisma.PublicDemoUncheckedCreateNestedOneWithoutTenantInput
 }
 
 export type TenantCreateOrConnectWithoutOperationalEventsInput = {
@@ -2254,6 +2445,7 @@ export type TenantUpdateWithoutOperationalEventsInput = {
   auditLogs?: Prisma.AuditLogUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUpdateOneWithoutTenantNestedInput
 }
 
 export type TenantUncheckedUpdateWithoutOperationalEventsInput = {
@@ -2277,6 +2469,7 @@ export type TenantUncheckedUpdateWithoutOperationalEventsInput = {
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutTenantNestedInput
   workspaceInvites?: Prisma.WorkspaceInviteUncheckedUpdateManyWithoutTenantNestedInput
   mailboxConnections?: Prisma.MailboxConnectionUncheckedUpdateManyWithoutTenantNestedInput
+  publicDemo?: Prisma.PublicDemoUncheckedUpdateOneWithoutTenantNestedInput
 }
 
 
@@ -2458,6 +2651,7 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   operationalEvents?: boolean | Prisma.Tenant$operationalEventsArgs<ExtArgs>
   workspaceInvites?: boolean | Prisma.Tenant$workspaceInvitesArgs<ExtArgs>
   mailboxConnections?: boolean | Prisma.Tenant$mailboxConnectionsArgs<ExtArgs>
+  publicDemo?: boolean | Prisma.Tenant$publicDemoArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenant"]>
 
@@ -2505,6 +2699,7 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   operationalEvents?: boolean | Prisma.Tenant$operationalEventsArgs<ExtArgs>
   workspaceInvites?: boolean | Prisma.Tenant$workspaceInvitesArgs<ExtArgs>
   mailboxConnections?: boolean | Prisma.Tenant$mailboxConnectionsArgs<ExtArgs>
+  publicDemo?: boolean | Prisma.Tenant$publicDemoArgs<ExtArgs>
   _count?: boolean | Prisma.TenantCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TenantIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2528,6 +2723,7 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     operationalEvents: Prisma.$OperationalEventPayload<ExtArgs>[]
     workspaceInvites: Prisma.$WorkspaceInvitePayload<ExtArgs>[]
     mailboxConnections: Prisma.$MailboxConnectionPayload<ExtArgs>[]
+    publicDemo: Prisma.$PublicDemoPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2945,6 +3141,7 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   operationalEvents<T extends Prisma.Tenant$operationalEventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$operationalEventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OperationalEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workspaceInvites<T extends Prisma.Tenant$workspaceInvitesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$workspaceInvitesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceInvitePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mailboxConnections<T extends Prisma.Tenant$mailboxConnectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$mailboxConnectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MailboxConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  publicDemo<T extends Prisma.Tenant$publicDemoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$publicDemoArgs<ExtArgs>>): Prisma.Prisma__PublicDemoClient<runtime.Types.Result.GetResult<Prisma.$PublicDemoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3730,6 +3927,25 @@ export type Tenant$mailboxConnectionsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.MailboxConnectionScalarFieldEnum | Prisma.MailboxConnectionScalarFieldEnum[]
+}
+
+/**
+ * Tenant.publicDemo
+ */
+export type Tenant$publicDemoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PublicDemo
+   */
+  select?: Prisma.PublicDemoSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PublicDemo
+   */
+  omit?: Prisma.PublicDemoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PublicDemoInclude<ExtArgs> | null
+  where?: Prisma.PublicDemoWhereInput
 }
 
 /**

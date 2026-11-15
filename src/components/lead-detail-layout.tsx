@@ -10,6 +10,7 @@ type LeadDetailLayoutProps = {
   workspaceMode: "database" | "demo";
   canEditLeadRecords: boolean;
   canDeleteLeadRecords: boolean;
+  publicDemo?: boolean;
   lead: {
     id: string;
     name: string;
@@ -84,6 +85,7 @@ export function LeadDetailLayout({
   workspaceMode,
   canEditLeadRecords,
   canDeleteLeadRecords,
+  publicDemo = false,
   lead,
   hasDistinctSummary,
   components,
@@ -203,12 +205,12 @@ export function LeadDetailLayout({
             >
               💬 Reply Workflow
             </button>
-            <button
+            {!publicDemo && <button
               onClick={() => setActiveTab("ai")}
               className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-slate-700 transition"
             >
               🤖 AI Insights
-            </button>
+            </button>}
             <button
               onClick={() => setActiveTab("notes")}
               className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:bg-slate-700 transition"
@@ -248,7 +250,7 @@ export function LeadDetailLayout({
           { key: "notes", label: "📝 Team Notes", count: lead.notes.length },
           { key: "overview", label: "👤 Profile Overview" },
           { key: "settings", label: "⚙️ Workflow & Settings" },
-        ].map((tab) => {
+        ].filter((tab) => !publicDemo || tab.key !== "ai").map((tab) => {
           const isActive = activeTab === tab.key;
           return (
             <button
@@ -398,11 +400,11 @@ export function LeadDetailLayout({
           {/* TAB 3: Team Notes */}
           {activeTab === "notes" && (
             <div className="space-y-6">
-              <VoiceNoteRecorder
+              {!publicDemo && <VoiceNoteRecorder
                 workspaceSlug={workspaceSlug}
                 leadId={lead.id}
                 canEdit={canEditLeadRecords}
-              />
+              />}
 
               <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
                 <h2 className="text-xl font-bold text-slate-900">Team Notes & Internal Memory</h2>

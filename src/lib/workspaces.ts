@@ -9,6 +9,7 @@ export type WorkspaceContext = {
   slug: string;
   name: string;
   mode: "database" | "demo";
+  publicDemo?: { expiresAt: number };
   currentUser: {
     id: string | null;
     email: string;
@@ -79,6 +80,7 @@ export async function getWorkspaceContext(workspaceSlug: string): Promise<Worksp
 
   try {
     const currentUser = await getCurrentUserContext();
+    if (currentUser.publicDemo && currentUser.publicDemo.slug !== workspaceSlug) notFound();
     const prisma = getPrismaClient();
     const memberships = await prisma.membership.findMany({
       where: {
@@ -133,6 +135,7 @@ export async function getWorkspaceContext(workspaceSlug: string): Promise<Worksp
     return {
       ...membership.tenant,
       mode: "database",
+      publicDemo: currentUser.publicDemo ? { expiresAt: currentUser.publicDemo.expiresAt } : undefined,
       membershipRole: membership.role,
       currentUser: {
         id: membership.user.id,

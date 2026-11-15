@@ -37,6 +37,7 @@ export async function processImageUploadAction(
     }
 
     const workspace = await getWorkspaceContext(workspaceSlug);
+    if (workspace.publicDemo) return { success: false, error: "Uploads are unavailable in the public demo." };
     // RBAC: Requires leads:create capability
     requireWorkspacePermission(workspace, "leads:write");
 

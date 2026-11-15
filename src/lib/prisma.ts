@@ -27,9 +27,9 @@ export function getPrismaClient() {
 
   const prisma = createPrismaClient();
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = prisma;
-  }
+  // Reuse the pool for the lifetime of every server process. Creating a client
+  // per helper call exhausts PostgreSQL connections during production renders.
+  globalForPrisma.prisma = prisma;
 
   return prisma;
 }

@@ -4,11 +4,12 @@ import { workflowDatabaseUrl } from "./e2e/fixtures/workflow-database";
 const databaseUrl = workflowDatabaseUrl();
 const port = Number(process.env.E2E_PORT ?? 3180);
 if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error("Invalid E2E_PORT.");
-const baseURL = `http://127.0.0.1:${port}`;
+// Next normalizes loopback redirect hosts to localhost; use one cookie origin.
+const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: "workflow-proof.spec.ts",
+  testMatch: ["workflow-proof.spec.ts", "public-demo.spec.ts"],
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env.CI,
@@ -27,16 +28,17 @@ export default defineConfig({
     navigationTimeout: 30_000,
   },
   webServer: {
-    command: `npm run dev -- --hostname 127.0.0.1 --port ${port}`,
+    command: `npm run build && node e2e/fixtures/start-production.mjs ${port}`,
     url: `${baseURL}/login`,
     reuseExistingServer: false,
-    timeout: 120_000,
+    timeout: 180_000,
     env: {
       DATABASE_URL: databaseUrl,
       AUTH_SECRET: "local-workflow-tests-only-not-a-production-secret",
       AUTH_TRUST_HOST: "true",
       AUTH_URL: baseURL,
       NEXTAUTH_URL: baseURL,
+      PUBLIC_DEMO_ENABLED: "true",
       OPENAI_API_KEY: "",
       REDIS_URL: "",
       LOG_LEVEL: "warn",

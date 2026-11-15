@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Tenant: 'Tenant',
   User: 'User',
+  PublicDemo: 'PublicDemo',
   Membership: 'Membership',
   WorkspaceInvite: 'WorkspaceInvite',
   Contact: 'Contact',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "user" | "membership" | "workspaceInvite" | "contact" | "lead" | "conversation" | "message" | "mailboxConnection" | "note" | "tag" | "leadTag" | "webhookEvent" | "aIGeneration" | "messageEmbedding" | "noteEmbedding" | "auditLog" | "operationalEvent"
+    modelProps: "tenant" | "user" | "publicDemo" | "membership" | "workspaceInvite" | "contact" | "lead" | "conversation" | "message" | "mailboxConnection" | "note" | "tag" | "leadTag" | "webhookEvent" | "aIGeneration" | "messageEmbedding" | "noteEmbedding" | "auditLog" | "operationalEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    PublicDemo: {
+      payload: Prisma.$PublicDemoPayload<ExtArgs>
+      fields: Prisma.PublicDemoFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PublicDemoFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PublicDemoFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        findFirst: {
+          args: Prisma.PublicDemoFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PublicDemoFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        findMany: {
+          args: Prisma.PublicDemoFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>[]
+        }
+        create: {
+          args: Prisma.PublicDemoCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        createMany: {
+          args: Prisma.PublicDemoCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PublicDemoCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>[]
+        }
+        delete: {
+          args: Prisma.PublicDemoDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        update: {
+          args: Prisma.PublicDemoUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        deleteMany: {
+          args: Prisma.PublicDemoDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PublicDemoUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PublicDemoUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>[]
+        }
+        upsert: {
+          args: Prisma.PublicDemoUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PublicDemoPayload>
+        }
+        aggregate: {
+          args: Prisma.PublicDemoAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePublicDemo>
+        }
+        groupBy: {
+          args: Prisma.PublicDemoGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PublicDemoGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PublicDemoCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PublicDemoCountAggregateOutputType> | number
         }
       }
     }
@@ -1817,6 +1892,18 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const PublicDemoScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  clientHash: 'clientHash',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type PublicDemoScalarFieldEnum = (typeof PublicDemoScalarFieldEnum)[keyof typeof PublicDemoScalarFieldEnum]
+
+
 export const MembershipScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -2422,6 +2509,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   tenant?: Prisma.TenantOmit
   user?: Prisma.UserOmit
+  publicDemo?: Prisma.PublicDemoOmit
   membership?: Prisma.MembershipOmit
   workspaceInvite?: Prisma.WorkspaceInviteOmit
   contact?: Prisma.ContactOmit

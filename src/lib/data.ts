@@ -943,7 +943,7 @@ async function fetchTenantSearchData(tenantSlug: string, query: string): Promise
     };
   }
 
-  const queryEmbedding = await generateSearchEmbedding(semanticQuery);
+  const queryEmbedding = await generateSearchEmbedding(semanticQuery, tenant.id);
   const leadById = new Map(tenant.leads.map((lead) => [lead.id, lead] as const));
 
   let semanticResults: SearchResultItem[] = [];

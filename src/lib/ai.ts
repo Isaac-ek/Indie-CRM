@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import OpenAI from "openai";
+import { isPublicDemoTenant } from "@/lib/public-demo";
 import { AIGenerationType } from "@/generated/prisma/client";
 import { createOperationalEvent } from "@/lib/operational-events";
 import { getPrismaClient } from "@/lib/prisma";
@@ -99,7 +100,7 @@ function fallbackEmbeddingVector(input: string) {
   return vector.map((value) => value / magnitude);
 }
 
-async function createEmbeddingVector(input: string) {
+async function createEmbeddingVector(input: string, tenantId?: string) {
   const normalized = normalizeEmbeddingInput(input);
 
   if (!normalized) {
@@ -110,7 +111,7 @@ async function createEmbeddingVector(input: string) {
     };
   }
 
-  if (!openai) {
+  if (!openai || (tenantId && await isPublicDemoTenant(tenantId))) {
     return {
       model: "fallback-local-embedding",
       vector: fallbackEmbeddingVector(normalized),
@@ -144,7 +145,7 @@ export async function upsertMessageEmbedding(params: {
   content: string;
 }) {
   const prisma = getPrismaClient();
-  const embedding = await createEmbeddingVector(params.content);
+  const embedding = await createEmbeddingVector(params.content, params.tenantId);
 
   await prisma.messageEmbedding.upsert({
     where: {
@@ -173,7 +174,7 @@ export async function upsertNoteEmbedding(params: {
   content: string;
 }) {
   const prisma = getPrismaClient();
-  const embedding = await createEmbeddingVector(params.content);
+  const embedding = await createEmbeddingVector(params.content, params.tenantId);
 
   await prisma.noteEmbedding.upsert({
     where: {
@@ -196,8 +197,8 @@ export async function upsertNoteEmbedding(params: {
   return embedding;
 }
 
-export async function generateSearchEmbedding(query: string) {
-  const embedding = await createEmbeddingVector(query);
+export async function generateSearchEmbedding(query: string, tenantId?: string) {
+  const embedding = await createEmbeddingVector(query, tenantId);
   return embedding.vector;
 }
 
@@ -282,8 +283,8 @@ async function getTenantAIInstructions(tenantId: string) {
   return tenant?.aiInstructions?.trim() || null;
 }
 
-async function createStructuredLeadIntelligence(prompt: string) {
-  if (!openai) {
+async function createStructuredLeadIntelligence(prompt: string, tenantId: string) {
+  if (!openai || await isPublicDemoTenant(tenantId)) {
     return null;
   }
 
@@ -349,6 +350,7 @@ export async function generateLeadIntelligence(params: {
         `Workspace instructions: ${tenantInstructions ?? "None"}`,
         "Infer practical tags, a concise summary, budget status, and the next action.",
       ].join("\n"),
+      params.tenantId,
     );
 
     if (outputText) {
@@ -420,7 +422,7 @@ export async function generateLeadIntelligence(params: {
         leadId: params.leadId,
         requestedById: params.requestedById,
         type: AIGenerationType.TAGGING,
-        model: openai ? aiModel : "fallback-local",
+        model: openai && !await isPublicDemoTenant(params.tenantId) ? aiModel : "fallback-local",
         promptVersion: "v1-lead-tagging",
         inputSummary: params.inquiry,
         outputText: intelligence.tags.join(", "),
@@ -430,7 +432,7 @@ export async function generateLeadIntelligence(params: {
         leadId: params.leadId,
         requestedById: params.requestedById,
         type: AIGenerationType.SUMMARY,
-        model: openai ? aiModel : "fallback-local",
+        model: openai && !await isPublicDemoTenant(params.tenantId) ? aiModel : "fallback-local",
         promptVersion: "v1-lead-summary",
         inputSummary: params.inquiry,
         outputText: `${intelligence.summary}\n\nNext action: ${intelligence.nextAction}`,
@@ -457,7 +459,7 @@ export async function generateReplySuggestion(params: {
     params.summary ?? params.latestMessage,
   );
 
-  if (openai) {
+  if (openai && !await isPublicDemoTenant(params.tenantId)) {
     try {
       const response = await openai.responses.create({
         model: aiModel,
@@ -516,7 +518,7 @@ export async function generateReplySuggestion(params: {
       conversationId: params.conversationId ?? undefined,
       requestedById: params.requestedById,
       type: AIGenerationType.REPLY_SUGGESTION,
-      model: openai ? aiModel : "fallback-local",
+      model: openai && !await isPublicDemoTenant(params.tenantId) ? aiModel : "fallback-local",
       promptVersion: "v1-reply-draft",
       inputSummary: [params.latestMessage, params.tone, params.contextNotes ?? ""].join("\n\n"),
       outputText: draft,
@@ -539,7 +541,7 @@ export async function generateFollowUpRecommendation(params: {
   const tenantInstructions = await getTenantAIInstructions(params.tenantId);
   let recommendation = fallbackFollowUpRecommendation(params.summary, params.latestMessage);
 
-  if (openai) {
+  if (openai && !await isPublicDemoTenant(params.tenantId)) {
     try {
       const response = await openai.responses.create({
         model: aiModel,
@@ -620,7 +622,7 @@ export async function generateFollowUpRecommendation(params: {
       conversationId: params.conversationId ?? undefined,
       requestedById: params.requestedById,
       type: AIGenerationType.FOLLOW_UP,
-      model: openai ? aiModel : "fallback-local",
+      model: openai && !await isPublicDemoTenant(params.tenantId) ? aiModel : "fallback-local",
       promptVersion: "v1-follow-up-recommendation",
       inputSummary: params.latestMessage,
       outputText: `${recommendation.nextAction}\n\nReasoning: ${recommendation.reasoning}\nRecommended follow-up: ${recommendation.recommendedDays} day(s)`,
@@ -645,7 +647,7 @@ export async function generateGroundedSearchAnswer(params: {
     params.evidence.map((item) => item.quote),
   );
 
-  if (openai && params.evidence.length > 0) {
+  if (openai && !await isPublicDemoTenant(params.tenantId) && params.evidence.length > 0) {
     try {
       const response = await openai.responses.create({
         model: aiModel,
@@ -696,7 +698,7 @@ export async function generateGroundedSearchAnswer(params: {
     data: {
       tenantId: params.tenantId,
       type: AIGenerationType.SEARCH_ANSWER,
-      model: openai ? aiModel : "fallback-local",
+      model: openai && !await isPublicDemoTenant(params.tenantId) ? aiModel : "fallback-local",
       promptVersion: "v1-grounded-search-answer",
       inputSummary: params.query,
       outputText: answer,

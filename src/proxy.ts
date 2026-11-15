@@ -8,10 +8,24 @@ const { auth } = NextAuth(authConfig);
 
 export default auth(async (req) => {
   const pathname = req.nextUrl.pathname;
+  const origin = req.nextUrl.origin;
   const isProtectedRoute = pathname.startsWith("/w/");
   const isAuthRoute = pathname === "/login" || pathname === "/register";
   const isVectorSearchRoute = pathname.includes("/search");
   const isLoggedIn = !!req.auth;
+  const guest = req.auth?.user?.demoSlug;
+  if (guest && (pathname.startsWith("/w/") || pathname.startsWith("/api/workspaces/"))) {
+    if (process.env.PUBLIC_DEMO_ENABLED !== "true" || (req.auth?.user?.demoExpiresAt ?? 0) <= Date.now()) {
+      return NextResponse.redirect(new URL("/demo?expired=1", origin));
+    }
+    // The demo exposes the existing lead workflow, not uploads or administration.
+    const parts = pathname.split("/");
+    const allowed = parts[1] === "w" && parts[2] === guest && ["leads", "search"].includes(parts[3]);
+    if (!allowed) {
+      if (pathname.startsWith("/api/")) return NextResponse.json({ error: "Unavailable in the public demo." }, { status: 403 });
+      return NextResponse.redirect(new URL(`/w/${guest}/leads?layout=kanban`, origin));
+    }
+  }
 
   // Request ID extraction or generation
   const existingRequestId = req.headers.get("x-request-id");
@@ -64,11 +78,11 @@ export default auth(async (req) => {
   }
 
   if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl.origin));
+    return NextResponse.redirect(new URL("/login", origin));
   }
 
-  if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL("/w/northstar-studio", req.nextUrl.origin));
+  if (isAuthRoute && isLoggedIn && !guest) {
+    return NextResponse.redirect(new URL("/", origin));
   }
 
   // Prepare response with request-id attached
@@ -95,7 +109,5 @@ export default auth(async (req) => {
 });
 
 export const config = {
-  // The Redis limiter and structured logger require Node.js APIs.
-  runtime: "nodejs",
-  matcher: ["/w/:path*", "/login", "/register"],
+  matcher: ["/w/:path*", "/api/workspaces/:path*", "/login", "/register"],
 };

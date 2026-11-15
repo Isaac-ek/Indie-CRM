@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPublicDemoTenant } from "@/lib/public-demo";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   parseFormWebhookPayload,
@@ -41,7 +42,7 @@ export async function POST(
       select: { id: true, slug: true },
     });
 
-    if (!tenant) {
+    if (!tenant || await isPublicDemoTenant(tenant.id)) {
       return NextResponse.json({ error: "Workspace not found." }, { status: 404 });
     }
 

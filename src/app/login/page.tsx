@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publicDemoEnabled } from "@/lib/public-demo";
 import { loginAction } from "@/lib/auth-actions";
 
 type PageProps = {
@@ -36,23 +37,15 @@ export default async function LoginPage({ searchParams }: PageProps) {
             ))}
           </div>
 
-          <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-amber-200">Local demo</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              If you have not connected a database yet, sign in with
-              <br />
-              <span className="font-medium text-white">owner@northstarstudio.test</span>
-              <br />
-              <span className="font-medium text-white">demo12345</span>
-            </p>
-          </div>
-
-          <div className="mt-8 rounded-[1.6rem] border border-emerald-400/20 bg-emerald-400/10 p-5">
-            <p className="text-xs uppercase tracking-[0.22em] text-emerald-200">What changed</p>
-            <p className="mt-3 text-sm leading-6 text-slate-300">
-              Memberships now drive workspace access, switching, and role-sensitive CRM actions across the app.
-            </p>
-          </div>
+          {publicDemoEnabled() ? (
+            <div className="mt-8 rounded-2xl border border-teal-300/25 bg-teal-300/10 p-5">
+              <h2 className="text-xl font-semibold">Just exploring?</h2>
+              <p className="my-3 text-sm leading-6 text-slate-300">Move a sample lead through the pipeline in your own temporary workspace. No account needed.</p>
+              <Link href="/demo" className="inline-block rounded-xl bg-teal-300 px-4 py-3 font-semibold text-slate-950">Try the public demo</Link>
+            </div>
+          ) : !process.env.DATABASE_URL ? (
+            <p className="mt-8 text-sm leading-6 text-slate-300">Local preview: owner@northstarstudio.test / demo12345</p>
+          ) : null}
         </section>
 
         <section className="rounded-[2.2rem] border border-white/70 bg-white/88 p-8 shadow-[0_24px_90px_rgba(148,163,184,0.22)] backdrop-blur">

@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Tenant: 'Tenant',
   User: 'User',
+  PublicDemo: 'PublicDemo',
   Membership: 'Membership',
   WorkspaceInvite: 'WorkspaceInvite',
   Contact: 'Contact',
@@ -110,6 +111,18 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const PublicDemoScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  clientHash: 'clientHash',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type PublicDemoScalarFieldEnum = (typeof PublicDemoScalarFieldEnum)[keyof typeof PublicDemoScalarFieldEnum]
 
 
 export const MembershipScalarFieldEnum = {
